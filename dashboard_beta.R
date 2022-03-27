@@ -4,8 +4,25 @@ library(shinydashboard)
 library(tidyverse)
 
 ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
+PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+
 x <- ADMISSIONS$HADM_ID
 n_adm <- n_distinct(x)
+
+#n_hospitalizacoes <- ADMISSIONS$SUBJECT_ID
+
+y <- ADMISSIONS$SUBJECT_ID
+n_distdoentes <- n_distinct(y) # PODEMOS OBTER TAMBEM CONTANDO ROWS OF PATIENTS
+
+o <- ICUSTAYS$HADM_ID
+n_icudist <- n_distinct(o)
+
+#GENDER
+males <- sum(PATIENTS$GENDER == 'M')
+females<- sum(PATIENTS$GENDER == 'F')
+
+percMales <- males/length(PATIENTS$GENDER)
 
 
 
@@ -28,12 +45,12 @@ body <- dashboardBody(
               title = "Basic MIMIC-III statistics between 2001-2012", width = 8, solidHeader = TRUE,
               #colocar dia e mes
               #cat("OLA"),
-              HTML('<b> Number of distinct ICU stays:</b> 53 423 ' ),print(n_adm),
+              HTML('<b> Number of distinct ICU stays:</b>' ),print(n_icudist), HTML('</br>'),
               
             
-              HTML('<b> Number of hospital admissions:</b> 49 785 <br>'),
-              HTML('<b> Number of distinct patients:</b> 38 597 <br>'),
-              HTML('<b> Gender, Male %:</b> 55.9% <br>'),
+              #HTML('<b> Number of hospital admissions:</b>'), print(n_hospitalizacoes), HTML( '</br>'),
+              HTML('<b> Number of distinct patients:</b>' ), print(n_distdoentes), HTML( '</br>'),
+             # HTML('<b> Gender, Male %:</b>'), print(percMales), HTML('</br>'),
               HTML('<b> Average age, years:</b> 65.8 <br>'),
               HTML('<b> ICU length of stay, average days:</b> 2.1 <br>'),
               HTML('<b> Hospital length of stay, average days:</b> 6.9 <br>'),
