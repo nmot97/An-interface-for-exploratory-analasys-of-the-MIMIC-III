@@ -1,6 +1,13 @@
 ## app.R ##
 library(shiny)
 library(shinydashboard)
+library(tidyverse)
+
+ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+x <- ADMISSIONS$HADM_ID
+n_adm <- n_distinct(x)
+
+
 
 header <- dashboardHeader(title="MIMIC-III"
 )
@@ -20,12 +27,14 @@ body <- dashboardBody(
             box(
               title = "Basic MIMIC-III statistics between 2001-2012", width = 8, solidHeader = TRUE,
               #colocar dia e mes
+              #cat("OLA"),
+              HTML('<b> Number of distinct ICU stays:</b> 53 423 ' ),print(n_adm),
               
-              HTML('<b> Number of distinct ICU stays:</b> 53 423 <br>'),
+            
               HTML('<b> Number of hospital admissions:</b> 49 785 <br>'),
               HTML('<b> Number of distinct patients:</b> 38 597 <br>'),
               HTML('<b> Gender, Male %:</b> 55.9% <br>'),
-              HTML('<b> Average age, years:</b> 65.8'),
+              HTML('<b> Average age, years:</b> 65.8 <br>'),
               HTML('<b> ICU length of stay, average days:</b> 2.1 <br>'),
               HTML('<b> Hospital length of stay, average days:</b> 6.9 <br>'),
               HTML('<b> ICU Mortality, %:</b> 8.5 <br>'),
