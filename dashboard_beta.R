@@ -2,6 +2,7 @@
 library(shiny)
 library(shinydashboard)
 library(tidyverse)
+library(eeptools)
 
 ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
 ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
@@ -23,6 +24,14 @@ males <- sum(PATIENTS$GENDER == 'M')
 females<- sum(PATIENTS$GENDER == 'F')
 
 percMales <- males/length(PATIENTS$GENDER)
+
+#numero de mortes 
+n_deaths <- sum(PATIENTS$DOD != "")
+
+PATIENTS$DOB <- gsub(PATIENTS$DOB,pattern=" 00:00:00",replacement="",fixed=T)
+PATIENTS$DOD <- gsub(PATIENTS$DOD,pattern=" 00:00:00",replacement="",fixed=T)
+PATIENTS$DOD_HOSP <- gsub(PATIENTS$DOD_HOSP,pattern=" 00:00:00",replacement="",fixed=T)
+PATIENTS$DOD_SSN <- gsub(PATIENTS$DOD_SSN,pattern=" 00:00:00",replacement="",fixed=T)
 
 
 
