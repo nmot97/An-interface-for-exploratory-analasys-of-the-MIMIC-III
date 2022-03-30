@@ -4,9 +4,10 @@ library(shinydashboard)
 library(tidyverse)
 library(eeptools)
 
-ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+ADMISSIONS_unique <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS_unique.csv")
 ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
 PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+
 
 x <- ADMISSIONS$HADM_ID
 n_adm <- n_distinct(x)
