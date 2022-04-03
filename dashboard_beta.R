@@ -4,7 +4,7 @@ library(shinydashboard)
 library(tidyverse)
 library(eeptools)
 
-ADMISSIONS_unique <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS_unique.csv")
+ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
 ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
 PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
 
@@ -34,7 +34,9 @@ PATIENTS$DOD <- gsub(PATIENTS$DOD,pattern=" 00:00:00",replacement="",fixed=T)
 PATIENTS$DOD_HOSP <- gsub(PATIENTS$DOD_HOSP,pattern=" 00:00:00",replacement="",fixed=T)
 PATIENTS$DOD_SSN <- gsub(PATIENTS$DOD_SSN,pattern=" 00:00:00",replacement="",fixed=T)
 
-
+ADMISSIONS <- ADMISSIONS %>% distinct(SUBJECT_ID, .keep_all = TRUE) ## remover rows com duplicados baseado no id
+df <- df %>% distinct(SUBJECT_ID, .keep_all =  TRUE)
+df$age <- age_calc(df$DOB, df$ADMITTIME, units = "years",precise = FALSE)
 
 header <- dashboardHeader(title="MIMIC-III"
 )
