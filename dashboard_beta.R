@@ -34,9 +34,16 @@ PATIENTS$DOD <- gsub(PATIENTS$DOD,pattern=" 00:00:00",replacement="",fixed=T)
 PATIENTS$DOD_HOSP <- gsub(PATIENTS$DOD_HOSP,pattern=" 00:00:00",replacement="",fixed=T)
 PATIENTS$DOD_SSN <- gsub(PATIENTS$DOD_SSN,pattern=" 00:00:00",replacement="",fixed=T)
 
+<<<<<<< Updated upstream
 ADMISSIONS <- ADMISSIONS %>% distinct(SUBJECT_ID, .keep_all = TRUE) ## remover rows com duplicados baseado no id
 df <- df %>% distinct(SUBJECT_ID, .keep_all =  TRUE)
 df$age <- age_calc(df$DOB, df$ADMITTIME, units = "years",precise = FALSE)
+=======
+df = merge(x=ADMISSIONS_unique,y=PATIENTS,by="SUBJECT_ID")
+View(df)
+
+
+>>>>>>> Stashed changes
 
 header <- dashboardHeader(title="MIMIC-III"
 )
