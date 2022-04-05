@@ -46,6 +46,13 @@ gender <- data.frame(unclass(table(dfmerge$GENDER)))
 n_males <-gender[2,] / sum(gender) 
 
 
+dfmerge$ADMITTIME <- as.Date(dfmerge$ADMITTIME)
+dfmerge$DISCHTIME <- as.Date(dfmerge$DISCHTIME)
+dfmerge$len_stay <- age_calc(dfmerge$ADMITTIME, dfmerge$DISCHTIME, units = "days",precise = FALSE)
+dfmerge$len_stay <- gsub(dfmerge$len_stay,pattern=" days",replacement="",fixed=T)
+dfmerge$len_stay <- as.numeric(dfmerge$len_stay)
+
+mortalitysum(!is.na(dfmerge$DOD))
 
 
 header <- dashboardHeader(title="MIMIC-III"
