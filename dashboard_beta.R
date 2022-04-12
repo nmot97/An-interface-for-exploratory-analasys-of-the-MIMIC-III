@@ -7,24 +7,25 @@ library(eeptools)
 ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
 ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
 PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
 
 
-x <- ADMISSIONS$HADM_ID
-n_adm <- n_distinct(x)
+n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
 
-#n_hospitalizacoes <- ADMISSIONS$SUBJECT_ID
+n_hospitalizacoes <- length(ADMISSIONS$SUBJECT_ID)
 
-y <- ADMISSIONS$SUBJECT_ID
-n_distdoentes <- n_distinct(y) # PODEMOS OBTER TAMBEM CONTANDO ROWS OF PATIENTS
 
-o <- ICUSTAYS$HADM_ID
-n_icudist <- n_distinct(o)
+n_distdoentes <- length(PATIENTS$SUBJECT_ID) # PODEMOS OBTER TAMBEM CONTANDO ROWS OF PATIENTS
+
+
+n_icudist <- n_distinct(ICUSTAYS$HADM_ID)
 
 #GENDER
 males <- sum(PATIENTS$GENDER == 'M')
 females<- sum(PATIENTS$GENDER == 'F')
 
 percMales <- males/length(PATIENTS$GENDER)
+percMales <- round( percMales, 3)
 
 #numero de mortes 
 n_deaths <- sum(PATIENTS$DOD != "")
@@ -35,24 +36,27 @@ PATIENTS$DOD_HOSP <- gsub(PATIENTS$DOD_HOSP,pattern=" 00:00:00",replacement="",f
 PATIENTS$DOD_SSN <- gsub(PATIENTS$DOD_SSN,pattern=" 00:00:00",replacement="",fixed=T)
 
 
-ADMISSIONS <- ADMISSIONS %>% distinct(SUBJECT_ID, .keep_all = TRUE) ## remover rows com duplicados baseado no id
-df = merge(x=ADMISSIONS_unique,y=PATIENTS,by="SUBJECT_ID")
-View(df)
+#ADMISSIONS <- ADMISSIONS %>% distinct(SUBJECT_ID, .keep_all = TRUE) ## remover rows com duplicados baseado no id
+#df = merge(x=ADMISSIONS_unique,y=PATIENTS,by="SUBJECT_ID")
+#View(df)
 
-df <- df %>% distinct(SUBJECT_ID, .keep_all =  TRUE)
-df$age <- age_calc(df$DOB, df$ADMITTIME, units = "years",precise = FALSE)
+#df <- df %>% distinct(SUBJECT_ID, .keep_all =  TRUE)
+#df$age <- age_calc(df$DOB, df$ADMITTIME, units = "years",precise = FALSE)
 
-gender <- data.frame(unclass(table(dfmerge$GENDER)))
-n_males <-gender[2,] / sum(gender) 
+#gender <- data.frame(unclass(table(dfmerge$GENDER)))
+#n_males <-gender[2,] / sum(gender) 
 
 
 dfmerge$ADMITTIME <- as.Date(dfmerge$ADMITTIME)
 dfmerge$DISCHTIME <- as.Date(dfmerge$DISCHTIME)
-dfmerge$len_stay <- age_calc(dfmerge$ADMITTIME, dfmerge$DISCHTIME, units = "days",precise = FALSE)
-dfmerge$len_stay <- gsub(dfmerge$len_stay,pattern=" days",replacement="",fixed=T)
-dfmerge$len_stay <- as.numeric(dfmerge$len_stay)
+#dfmerge$len_stay <- age_calc(dfmerge$ADMITTIME, dfmerge$DISCHTIME, units = "days",precise = FALSE)
+#dfmerge$len_stay <- gsub(dfmerge$len_stay,pattern=" days",replacement="",fixed=T)
+#dfmerge$len_stay <- as.numeric(dfmerge$len_stay)
 
-mortalitysum(!is.na(dfmerge$DOD))
+#mortalitysum(!is.na(dfmerge$DOD))
+
+tempage <- filter(dfmerge, age <300 | age> 0 )
+average_age <- mean(tempage$age)
 
 
 header <- dashboardHeader(title="MIMIC-III"
@@ -77,14 +81,14 @@ body <- dashboardBody(
               HTML('<b> Number of distinct ICU stays:</b>' ),print(n_icudist), HTML('</br>'),
               
             
-              #HTML('<b> Number of hospital admissions:</b>'), print(n_hospitalizacoes), HTML( '</br>'),
+              HTML('<b> Number of hospital admissions:</b>'), print(n_hospitalizacoes), HTML( '</br>'),
               HTML('<b> Number of distinct patients:</b>' ), print(n_distdoentes), HTML( '</br>'),
-             # HTML('<b> Gender, Male %:</b>'), print(percMales), HTML('</br>'),
-              HTML('<b> Average age, years:</b> 65.8 <br>'),
-              HTML('<b> ICU length of stay, average days:</b> 2.1 <br>'),
-              HTML('<b> Hospital length of stay, average days:</b> 6.9 <br>'),
-              HTML('<b> ICU Mortality, %:</b> 8.5 <br>'),
-              HTML('<b> Hospital mortality,% :</b> 11.5 <br>')
+              HTML('<b> Gender, Male %:</b>'), print(percMales), HTML('</br>'),
+              HTML('<b> Average age, years:</b> '),print( round(average_age,3) ), HTML('</br>'),
+              HTML('<b> ICU length of stay, average days:</b>'), print( round(mean(ICUSTAYS$LOS, na.rm =  TRUE),3) ), HTML('</br>'),
+              #HTML('<b> Hospital length of stay, average days:</b> 6.9 <br>'),
+              #HTML('<b> ICU Mortality, %:</b> 8.5 <br>'),
+              HTML('<b> Hospital mortality,% :</b>'), print(round(n_deaths/46520,3)), HTML('</br>'),
             ),
             
           
