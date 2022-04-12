@@ -99,7 +99,17 @@ body <- dashboardBody(
     
     
     tabItem(tabName = "search",
-            h5("Here you can make different kind of searches")
+            h5("Here you can make different kind of searches"),
+            sidebarLayout(
+                sidebarPanel (
+                  selectInput( "inState", "Select a field to create histogram", choices = names(dfmerge) )
+                ),
+              
+              
+                mainPanel(
+                  plotOutput("grafico")
+                )
+            )
     )
   )
   
@@ -110,7 +120,12 @@ body <- dashboardBody(
 ui <- dashboardPage(header, sidebar, body)
 
 
-server <- function(input, output) { }
+server <- (function(input, output) {
+  output$grafico <- renderPlot({
+    hist(dfmerge[,input$inState],col = "#75AADB")
+  })
+  
+})
 
 shinyApp(ui, server)
 
