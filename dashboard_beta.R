@@ -58,6 +58,9 @@ dfmerge$DISCHTIME <- as.Date(dfmerge$DISCHTIME)
 tempage <- filter(dfmerge, age <300 | age> 0 )
 average_age <- mean(tempage$age)
 
+dfmerge$GENDER <- as.factor(dfmerge$GENDER)
+dfmerge$DIAGNOSIS <- as.factor(dfmerge$DIAGNOSIS)
+
 
 header <- dashboardHeader(title="MIMIC-III"
 )
@@ -122,7 +125,13 @@ ui <- dashboardPage(header, sidebar, body)
 
 server <- (function(input, output) {
   output$grafico <- renderPlot({
-    hist(dfmerge[,input$inState],col = "#75AADB")
+    if( is.factor(dfmerge[,input$inState]) || is.character(dfmerge[,input$inState])) {
+ 
+      barplot(summary(as.factor(dfmerge[,input$inState])),col = "#75AADB")
+    }
+    else
+      
+      hist((dfmerge[,input$inState]),col = "#75AADB")
   })
   
 })
