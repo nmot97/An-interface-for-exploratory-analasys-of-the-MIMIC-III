@@ -69,7 +69,8 @@ sidebar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Dashboard", tabName = "home", icon = icon("home")),
     menuItem("Pesquisa", icon = icon("search"), tabName = "search",
-             badgeLabel = "beta", badgeColor = "green")
+             badgeLabel = "beta", badgeColor = "green"),
+    menuItem("Patients", tabName = "patients", icon = icon("hospital-user"))
   )
 )
 
@@ -83,7 +84,7 @@ body <- dashboardBody(
               #cat("OLA"),
               HTML('<b> Number of distinct ICU stays:</b>' ),print(n_icudist), HTML('</br>'),
               
-            
+              
               HTML('<b> Number of hospital admissions:</b>'), print(n_hospitalizacoes), HTML( '</br>'),
               HTML('<b> Number of distinct patients:</b>' ), print(n_distdoentes), HTML( '</br>'),
               HTML('<b> Gender, Male %:</b>'), print(percMales), HTML('</br>'),
@@ -94,27 +95,37 @@ body <- dashboardBody(
               HTML('<b> Hospital mortality,% :</b>'), print(round(n_deaths/46520,3)), HTML('</br>'),
             ),
             
-          
             
-
+            
+            
     ),
+    
+    tabItem(tabName = "patients",
+            h4("Search for especific patient"),
+            fluidRow(
+              box(selectInput("v_select", label = "Gender" , choices = unique(dfmerge$GENDER), width = 12))
+            )
+            
+            
+            
+    ), #fimpatients
     
     
     
     tabItem(tabName = "search",
             h5("Here you can make different kind of searches"),
             sidebarLayout(
-                sidebarPanel (
-                  selectInput( "inState", "Select a field to create histogram", choices = names(dfmerge) )
-                ),
+              sidebarPanel (
+                selectInput( "inState", "Select a field to create histogram", choices = names(dfmerge) )
+              ),
               
               
-                mainPanel(
-                  plotOutput("grafico")
-                )
+              mainPanel(
+                plotOutput("grafico")
+              )
             )
-    )
-  )
+    ) #fim search
+  ) #fimtab items
   
   
   
@@ -124,15 +135,21 @@ ui <- dashboardPage(header, sidebar, body)
 
 
 server <- (function(input, output) {
+  
   output$grafico <- renderPlot({
     if( is.factor(dfmerge[,input$inState]) || is.character(dfmerge[,input$inState])) {
- 
+      
       barplot(summary(as.factor(dfmerge[,input$inState])),col = "#75AADB")
     }
     else
       
       hist((dfmerge[,input$inState]),col = "#75AADB")
   })
+  
+  #updateSelectizeInput(session, 'foo', choices = (dfmerge$GENDER), server = TRUE, label = NULL)
+  
+  dfmerge
+  
   
 })
 
