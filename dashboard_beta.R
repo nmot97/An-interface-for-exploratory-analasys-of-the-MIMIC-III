@@ -4,10 +4,10 @@ library(shinydashboard)
 library(tidyverse)
 library(eeptools)
 
-ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
-ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
-PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
-dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
+#ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+#ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
+#PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+#dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
 
 
 n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
@@ -103,8 +103,20 @@ body <- dashboardBody(
     tabItem(tabName = "patients",
             h4("Search for especific patient"),
             fluidRow(
-              box(selectInput("v_select", label = "Gender" , choices = unique(dfmerge$GENDER), width = 12))
+              box(plotOutput("select_example"), width = 6)
+              
+            ),
+            fluidRow(
+              #box(selectInput("v_select", label = "Gender" , choices = unique(dfmerge$GENDER), width = 12)
+             # ),
+              
+              #print( length (res$SUBJECT_ID)),
+              box(sliderInput("v_select", "Select age",
+                              min = 0, max = 89, value = 20)
+              )
             )
+            
+      
             
             
             
@@ -148,7 +160,26 @@ server <- (function(input, output) {
   
   #updateSelectizeInput(session, 'foo', choices = (dfmerge$GENDER), server = TRUE, label = NULL)
   
-  dfmerge
+  # genderx <- reactive({
+  #   
+  #   
+  #  # res <- dfmerge %>% filter( GENDER == input$v_select)
+  #   res <- dfmerge %>% filter ( age == input$age_select)
+  #   output$graficoage <- renderPlot({
+  #     hist(res$age)
+  #   })
+  #   
+  # })
+  
+  output$select_example <- renderPlot({
+    
+    hist(dfmerge$age[input$v_select])
+
+  })
+
+  
+  
+  
   
   
 })
