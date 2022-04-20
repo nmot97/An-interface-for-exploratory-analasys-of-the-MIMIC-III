@@ -115,24 +115,46 @@ body <- dashboardBody(
     
     tabItem(tabName = "patients",
             h4("Search for especific patient"),
-            # fluidRow(
-            #   box(plotOutput("select_example"), width = 6)
-            #   
-            # ),
-            fluidRow(
-              box(selectInput("v_ae", label = "Gender" , choices = unique(dfmerge$GENDER), width = 12)
-             ),
-              
-              #print( length (res$SUBJECT_ID)),
-              box(sliderInput("v_select", "Select age",
-                              min = 0, max = 89, value = 20)
-              ),
-              verbatimTextOutput("stats")
-            )
             
+            # fluidRow(
+            #   box(selectInput("v_ae", label = "Gender" , choices = unique(dfmerge$GENDER), width = 12)
+            #  ),
+            #   
+            #   #print( length (res$SUBJECT_ID)),
+            #   box(sliderInput("v_select", "Select age",
+            #                   min = 0, max = 89, value = 20)
+            #   ),
+            #   verbatimTextOutput("stats")
+            # )
+            sidebarLayout(
+              
+            
+              sidebarPanel(
+                
+               
+                selectInput(inputId = "in_gender",
+                            label = "Choose a gender:",
+                            choices = unique(dfmerge$GENDER)),
+                
+                
+              #   sliderInput("in_age", "Select age", min = 10, max = 89, value = 20)
+              # ),
+              # 
+              ),
+              mainPanel(
+                
+                
+                verbatimTextOutput("summary")
+                
+                
+                # tableOutput("view")
+                
+                ),
+                
+              
       
             
-            
+            ), 
             
     ), #fimpatients
     
@@ -150,6 +172,7 @@ body <- dashboardBody(
                 plotOutput("grafico")
               )
             )
+            
     ) #fim search
   ) #fimtab items
   
@@ -172,6 +195,9 @@ server <- (function(input, output) {
       hist((dfmerge[,input$inState]),col = "#75AADB")
   })
   
+  
+  
+  
   # output$age_graph <- renderPlot({
   #   barplot(table(dfmerge$age),main = "Age frequency", 
   #           xlab = "Frequency", 
@@ -183,6 +209,9 @@ server <- (function(input, output) {
   #           xlab = "Frequency", 
   #           ylab = "LOS")
   # })
+  
+  
+  
   output$los_graph <- renderPlotly({
     plot_ly(
       data = ICUSTAYS,
@@ -208,6 +237,33 @@ server <- (function(input, output) {
       )
   })
   
+  # datasetInput <- reactive({
+  #   switch(input$dfmerge,
+  #          "age" = age,
+  #          "GENDER" = GENDER)
+  # })
+  
+  dfInput <- reactive({
+    dfmerge <- filter(dfmerge, GENDER == "input$in_gender")
+  })
+  
+  output$summary <- renderPrint({
+    df1 <- dfInput()
+    summary(df1)
+  })
+  
+  # output$summary <- renderPrint({
+  #   dfmerge <- datasetInput()
+  #   summary(dfmerge)
+  # })
+  
+  # output$view <- renderTable({
+  #   head(datasetInput(), n = input$in_age)
+  # })
+  # 
+  
+  
+  
   
   #updateSelectizeInput(session, 'foo', choices = (dfmerge$GENDER), server = TRUE, label = NULL)
   
@@ -222,11 +278,11 @@ server <- (function(input, output) {
   #   
   # })
   
-  output$select_example <- renderPlot({
-    
-    hist(dfmerge$age[input$v_select])
-
-  })
+  # output$select_example <- renderPlot({
+  #   
+  #   hist(dfmerge$age[input$v_select])
+  # 
+  # })
   
   # output$stats <- renderPrint({
   #   count(dfmerge$age(input$v_select) )
