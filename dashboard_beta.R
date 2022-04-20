@@ -1,13 +1,15 @@
 ## app.R ##
+
 library(shiny)
 library(shinydashboard)
 library(tidyverse)
+library(plotly)
 library(eeptools)
 
-#ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
-#ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
-#PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
-#dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
+ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
+PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
 
 
 n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
@@ -78,22 +80,33 @@ body <- dashboardBody(
   tabItems(
     tabItem(tabName = "home",
             h4("Welcome to the home page"),
-            box(
-              title = "Basic MIMIC-III statistics between 2001-2012", width = 8, solidHeader = TRUE,
-              #colocar dia e mes
-              #cat("OLA"),
-              HTML('<b> Number of distinct ICU stays:</b>' ),print(n_icudist), HTML('</br>'),
+            fluidRow(
+              box(
+                title = "Basic MIMIC-III statistics between 2001-2012", width = 8, solidHeader = TRUE,
+                #colocar dia e mes
+                #cat("OLA"),
+                HTML('<b> Number of distinct ICU stays:</b>' ),print(n_icudist), HTML('</br>'),
+                
+                
+                HTML('<b> Number of hospital admissions:</b>'), print(n_hospitalizacoes), HTML( '</br>'),
+                HTML('<b> Number of distinct patients:</b>' ), print(n_distdoentes), HTML( '</br>'),
+                HTML('<b> Gender, Male %:</b>'), print(percMales), HTML('</br>'),
+                HTML('<b> Average age, years:</b> '),print( round(average_age,3) ), HTML('</br>'),
+                HTML('<b> ICU length of stay, average days:</b>'), print( round(mean(ICUSTAYS$LOS, na.rm =  TRUE),3) ), HTML('</br>'),
+                #HTML('<b> Hospital length of stay, average days:</b> 6.9 <br>'),
+                #HTML('<b> ICU Mortality, %:</b> 8.5 <br>'),
+                HTML('<b> Hospital mortality,% :</b>'), print(round(n_deaths/46520,3)), HTML('</br>'),
+              ),
               
+              box(
+                plotlyOutput("los_graph")
+              ),
               
-              HTML('<b> Number of hospital admissions:</b>'), print(n_hospitalizacoes), HTML( '</br>'),
-              HTML('<b> Number of distinct patients:</b>' ), print(n_distdoentes), HTML( '</br>'),
-              HTML('<b> Gender, Male %:</b>'), print(percMales), HTML('</br>'),
-              HTML('<b> Average age, years:</b> '),print( round(average_age,3) ), HTML('</br>'),
-              HTML('<b> ICU length of stay, average days:</b>'), print( round(mean(ICUSTAYS$LOS, na.rm =  TRUE),3) ), HTML('</br>'),
-              #HTML('<b> Hospital length of stay, average days:</b> 6.9 <br>'),
-              #HTML('<b> ICU Mortality, %:</b> 8.5 <br>'),
-              HTML('<b> Hospital mortality,% :</b>'), print(round(n_deaths/46520,3)), HTML('</br>'),
-            ),
+              box(
+                plotlyOutput("age_graph")
+              )
+            
+            )
             
             
             
@@ -102,18 +115,19 @@ body <- dashboardBody(
     
     tabItem(tabName = "patients",
             h4("Search for especific patient"),
+            # fluidRow(
+            #   box(plotOutput("select_example"), width = 6)
+            #   
+            # ),
             fluidRow(
-              box(plotOutput("select_example"), width = 6)
-              
-            ),
-            fluidRow(
-              #box(selectInput("v_select", label = "Gender" , choices = unique(dfmerge$GENDER), width = 12)
-             # ),
+              box(selectInput("v_ae", label = "Gender" , choices = unique(dfmerge$GENDER), width = 12)
+             ),
               
               #print( length (res$SUBJECT_ID)),
               box(sliderInput("v_select", "Select age",
                               min = 0, max = 89, value = 20)
-              )
+              ),
+              verbatimTextOutput("stats")
             )
             
       
@@ -158,6 +172,43 @@ server <- (function(input, output) {
       hist((dfmerge[,input$inState]),col = "#75AADB")
   })
   
+  # output$age_graph <- renderPlot({
+  #   barplot(table(dfmerge$age),main = "Age frequency", 
+  #           xlab = "Frequency", 
+  #           ylab = "Age")
+  # })
+  
+  # output$los_graph <- renderPlot({
+  #   hist(ICUSTAYS$LOS,breaks= "FD",xlim = c(0,50),main = "Length of Stay frequency", 
+  #           xlab = "Frequency", 
+  #           ylab = "LOS")
+  # })
+  output$los_graph <- renderPlotly({
+    plot_ly(
+      data = ICUSTAYS,
+      x = ~LOS,
+      type = "histogram"
+    ) %>%
+      layout(title= "Histogram of Length of Stay", 
+             xaxis= list(title = "Days" )
+      )
+    
+    
+  })
+  
+  output$age_graph <- renderPlotly({
+    plot_ly(
+      data = filter(dfmerge, age <300 & age > 0),
+      x = ~age,
+      type="histogram"
+    ) %>%
+      layout(title= "Histogram of age", 
+             xaxis= list(title = "Years" )
+        
+      )
+  })
+  
+  
   #updateSelectizeInput(session, 'foo', choices = (dfmerge$GENDER), server = TRUE, label = NULL)
   
   # genderx <- reactive({
@@ -176,6 +227,10 @@ server <- (function(input, output) {
     hist(dfmerge$age[input$v_select])
 
   })
+  
+  # output$stats <- renderPrint({
+  #   count(dfmerge$age(input$v_select) )
+  # })
 
   
   
