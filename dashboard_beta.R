@@ -244,7 +244,7 @@ server <- (function(input, output) {
   # })
   
   dfInput <- reactive({
-    dfmerge <- filter(dfmerge, GENDER == input$in_gender)
+    df1 <- filter(dfmerge, GENDER == input$in_gender)
   })
   
   output$summary <- renderPrint({
