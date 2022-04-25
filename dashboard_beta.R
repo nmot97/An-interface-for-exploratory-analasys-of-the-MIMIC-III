@@ -51,6 +51,37 @@ PATIENTS$DOD_SSN <- gsub(PATIENTS$DOD_SSN,pattern=" 00:00:00",replacement="",fix
 
 dfmerge$ADMITTIME <- as.Date(dfmerge$ADMITTIME)
 dfmerge$DISCHTIME <- as.Date(dfmerge$DISCHTIME)
+dfmerge$DEATHTIME <- as.Date(dfmerge$DEATHTIME)
+dfmerge$DEATHTIME <- as.Date(dfmerge$DEATHTIME)
+dfmerge$ADMISSION_TYPE <- as.factor(dfmerge$ADMISSION_TYPE)
+dfmerge$ADMISSION_LOCATION <- as.factor(dfmerge$ADMISSION_LOCATION)
+dfmerge$INSURANCE <- as.factor(dfmerge$INSURANCE)
+dfmerge$RELIGION <- as.factor(dfmerge$RELIGION)
+dfmerge$MARITAL_STATUS <- as.factor(dfmerge$MARITAL_STATUS)
+dfmerge$ETHNICITY <- as.factor(dfmerge$ETHNICITY)
+dfmerge$EDREGTIME <- as.Date(dfmerge$EDREGTIME)
+dfmerge$EDOUTTIME <- as.Date(dfmerge$EDOUTTIME)
+dfmerge$DIAGNOSIS <- as.factor(dfmerge$DIAGNOSIS)
+dfmerge$DOB <- as.Date(dfmerge$DOB)
+dfmerge$DOD <- as.Date(dfmerge$DOD)
+dfmerge$DOD_HOSP <- as.Date(dfmerge$DOD_HOSP)
+dfmerge$DOD_SSN <- as.Date(dfmerge$DOD_SSN)
+
+
+xpto <- unique(dfmerge$GENDER)
+xpto <- c("ALL",xpto)
+
+xpto2 <- unique(as.character(dfmerge$ETHNICITY))
+xpto2 <- c("ALL",xpto2)
+
+xpto3 <- unique( as.character(dfmerge$RELIGION))
+xpto3 <- c("ALL", xpto3)
+
+
+
+
+
+
 #dfmerge$len_stay <- age_calc(dfmerge$ADMITTIME, dfmerge$DISCHTIME, units = "days",precise = FALSE)
 #dfmerge$len_stay <- gsub(dfmerge$len_stay,pattern=" days",replacement="",fixed=T)
 #dfmerge$len_stay <- as.numeric(dfmerge$len_stay)
@@ -134,12 +165,18 @@ body <- dashboardBody(
                
                 selectInput(inputId = "in_gender",
                             label = "Choose a gender:",
-                            choices = unique(dfmerge$GENDER)),
+                            choices = xpto),
+                 
+                selectInput(inputId = "in_ethnicity",
+                            label = "Choose an ethnicity:",
+                            choices = xpto2 ),
+                
+                selectInput(inputId = "in_religion",
+                            label = "Choose a religion:",
+                            choices = xpto3),
                 
                 
-              #   sliderInput("in_age", "Select age", min = 10, max = 89, value = 20)
-              # ),
-              # 
+              
               ),
               mainPanel(
                 
@@ -244,7 +281,23 @@ server <- (function(input, output) {
   # })
   
   dfInput <- reactive({
-    df1 <- filter(dfmerge, GENDER == input$in_gender)
+    
+    
+    if ( input$in_gender == "ALL" || input$in_ethnicity != "ALL" || input$in_religion != "ALL"){
+      df1 <- dfmerge
+      df1 <- filter(df1, ETHNICITY == input$in_ethnicity)
+      df1 <- filter(df1, RELIGION == input$in_religion)
+    }
+    else if(input$in_gender != "ALL" || input$in_ethnicity == "ALL" || input$in_religion != "ALL"){
+      df2 <- dfmerge
+      df1 <- filter(dfmerge, GENDER == input$in_gender)
+      
+    }
+    else {
+      df1 <- filter(dfmerge, GENDER == input$in_gender)
+      df1 <- filter(df1, ETHNICITY == input$in_ethnicity)
+      df1 <- filter(df1, RELIGION == input$in_religion)
+    }
   })
   
   output$summary <- renderPrint({
