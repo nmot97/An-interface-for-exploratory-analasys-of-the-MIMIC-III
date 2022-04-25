@@ -6,10 +6,10 @@ library(tidyverse)
 library(plotly)
 library(eeptools)
 
-ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
-ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
-PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
-dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
+# ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+# ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
+# PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+# dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
 
 
 n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
@@ -30,7 +30,7 @@ percMales <- males/length(PATIENTS$GENDER)
 percMales <- round( percMales, 3)
 
 #numero de mortes 
-n_deaths <- sum(PATIENTS$DOD != "")
+n_deaths <- sum( is.na(PATIENTS$DOD))
 
 PATIENTS$DOB <- gsub(PATIENTS$DOB,pattern=" 00:00:00",replacement="",fixed=T)
 PATIENTS$DOD <- gsub(PATIENTS$DOD,pattern=" 00:00:00",replacement="",fixed=T)
@@ -68,7 +68,7 @@ dfmerge$DOD_HOSP <- as.Date(dfmerge$DOD_HOSP)
 dfmerge$DOD_SSN <- as.Date(dfmerge$DOD_SSN)
 
 
-xpto <- unique(dfmerge$GENDER)
+xpto <- unique(as.character(dfmerge$GENDER))
 xpto <- c("ALL",xpto)
 
 xpto2 <- unique(as.character(dfmerge$ETHNICITY))
@@ -175,7 +175,7 @@ body <- dashboardBody(
                             label = "Choose a religion:",
                             choices = xpto3),
                 
-                
+                actionButton('select', 'Select'),
               
               ),
               mainPanel(
@@ -280,29 +280,43 @@ server <- (function(input, output) {
   #          "GENDER" = GENDER)
   # })
   
-  dfInput <- reactive({
-    
-    
-    if ( input$in_gender == "ALL" || input$in_ethnicity != "ALL" || input$in_religion != "ALL"){
-      df1 <- dfmerge
-      df1 <- filter(df1, ETHNICITY == input$in_ethnicity)
-      df1 <- filter(df1, RELIGION == input$in_religion)
-    }
-    else if(input$in_gender != "ALL" || input$in_ethnicity == "ALL" || input$in_religion != "ALL"){
-      df2 <- dfmerge
-      df1 <- filter(dfmerge, GENDER == input$in_gender)
-      
-    }
-    else {
-      df1 <- filter(dfmerge, GENDER == input$in_gender)
-      df1 <- filter(df1, ETHNICITY == input$in_ethnicity)
-      df1 <- filter(df1, RELIGION == input$in_religion)
+  filtered_gender <- reactive({
+    if(input$in_gender == "ALL"){
+      dfmerge
+    } else {
+        dfmerge %>% 
+          filter(GENDER == input$in_gender)
     }
   })
   
+  filtered_ethnicity <- reactive({
+    if(input$in_ethnicity == "ALL"){
+      filtered_gender()
+    } else {
+      filtered_gender() %>% 
+        filter(ETHNICITY == input$in_ethnicity)
+    }
+  })
+  
+  filtered_religion <- reactive({
+    if(input$in_religion == "ALL"){
+      filtered_ethnicity()
+    } else {
+      filtered_ethnicity() %>% 
+        filter(RELIGION == input$in_religion)
+    }
+  })
+  
+  fully_filtered <- eventReactive(input$select, {
+    filtered_religion()
+  })
+  
+  
+  
+  
   output$summary <- renderPrint({
-    df1 <- dfInput()
-    summary(df1)
+    # df2 <- dfInput()
+    summary(fully_filtered() )
   })
   
   # output$summary <- renderPrint({
