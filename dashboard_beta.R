@@ -153,7 +153,7 @@
       ),
       
       tabItem(tabName = "patients",
-              h4("Search for especific patient"),
+              h4("Filter to find general info about patients"),
               
               
               sidebarLayout(
@@ -173,6 +173,11 @@
                   selectInput(inputId = "in_religion",
                               label = "Choose a religion:",
                               choices = xpto3),
+                  sliderInput( inputId = "in_age",
+                              label = "Age", min = -1, max = 300,
+                              value = -1
+                  ),
+                  print("Select -1 to not select age"),
                   
                   actionButton('select', 'Select'),
                   width = 3
@@ -305,8 +310,20 @@
       }
     })
     
+    filtered_age <- reactive({
+      if(input$in_age == "-1" ){
+        filtered_religion()
+      }
+      else{
+        filtered_religion() %>% 
+        filter( age == input$in_age)
+        }
+    })
+    
+  
+    
     fully_filtered <- eventReactive(input$select, {
-      filtered_religion()
+      filtered_age()
     })
     
     
