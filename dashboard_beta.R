@@ -70,6 +70,9 @@ dfmerge$DOD_HOSP <- as.Date(dfmerge$DOD_HOSP)
 dfmerge$DOD_SSN <- as.Date(dfmerge$DOD_SSN)
 dfmerge$LANGUAGE <- as.factor(dfmerge$LANGUAGE)
 
+
+ADMISSIONS$DIAGNOSIS <- as.factor(ADMISSIONS$DIAGNOSIS)
+
 dfmerge$X <- NULL
 dfmerge$ROW_ID.x <- NULL
 dfmerge$...1 <- NULL
@@ -111,7 +114,8 @@ sidebar <- dashboardSidebar(
     menuItem("Dashboard", tabName = "home", icon = icon("home")),
     menuItem("Pesquisa", icon = icon("search"), tabName = "search",
              badgeLabel = "beta", badgeColor = "green"),
-    menuItem("Patients", tabName = "patients", icon = icon("hospital-user"))
+    menuItem("Patients", tabName = "patients", icon = icon("hospital-user")),
+    menuItem("Admissions", tabName = "admissions", icon = icon("book-medical"))
   )
 )
 
@@ -121,7 +125,7 @@ body <- dashboardBody(
             h4("Welcome to the home page"),
             fluidRow(
               box(
-                title = "Basic MIMIC-III statistics between 2001-2012", width = 8, solidHeader = TRUE,
+                title = "Basic MIMIC-III statistics between 2001-2012", width = 7, solidHeader = TRUE,
                 #colocar dia e mes
                 #cat("OLA"),
                 HTML('<b> Number of distinct ICU stays:</b>' ),print(n_icudist), HTML('</br>'),
@@ -200,6 +204,22 @@ body <- dashboardBody(
             ), 
             
     ), #fimpatients
+    tabItem(tabName = "admissions",
+            h3("Details of every patient admission on the hospital"),
+            br(),
+            h4("There's a total of 58976 admissions registered on the database. Each one has a diferent ID , called HADM_ID. "),
+            fluidRow(
+              box(
+                verbatimTextOutput("diseases")
+              )
+              
+              
+            )
+            
+          
+            
+            
+    ), #fim search
     
     
     
@@ -278,6 +298,10 @@ server <- (function(input, output) {
              xaxis= list(title = "Years" )
              
       )
+  })
+  
+  output$diseases <- renderPrint({
+    summary(ADMISSIONS$DIAGNOSIS)
   })
   
   
