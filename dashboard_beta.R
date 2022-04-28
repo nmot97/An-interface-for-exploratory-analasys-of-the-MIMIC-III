@@ -81,8 +81,13 @@ discharge_loc <- data.frame(unclass(summary(as.factor(ADMISSIONS$DISCHARGE_LOCAT
 colnames(discharge_loc) <- c("Discharge location frequency")
 insurance_temp <- data.frame(unclass(summary(as.factor(ADMISSIONS$INSURANCE))), check.names = FALSE, stringsAsFactors = TRUE)
 colnames(insurance_temp) <- c("Insurance frequency")
-diagnosis_temp <- data.frame(unclass(summary(as.factor(ADMISSIONS$DIAGNOSIS))), check.names = FALSE, stringsAsFactors = TRUE)
-colnames(diagnosis_temp) <- c("D")
+diagnosis_temp <- as.data.frame(unclass(summary(as.factor(ADMISSIONS$DIAGNOSIS))), check.names = FALSE, stringsAsFactors = TRUE)
+diagnosis_temp <- tibble::rownames_to_column(diagnosis_temp, "Diagnose")
+colnames(diagnosis_temp) <- c("Diagnose","D")
+
+# data <- data.frame(ADMISSIONS$DIAGNOSIS)
+# data$ADMISSIONS.DIAGNOSIS <- factor(data$ADMISSIONS.DIAGNOSIS, levels = unique(data$ADMISSIONS.DIAGNOSIS)[order(data$Count, decreasing = TRUE)])
+
 
 
 dfmerge$X <- NULL
@@ -138,6 +143,7 @@ body <- dashboardBody(
             fluidRow(
               box(
                 title = "Basic MIMIC-III statistics between 2001-2012", width = 7, solidHeader = TRUE,
+                status = "warning",
                 #colocar dia e mes
                 #cat("OLA"),
                 HTML('<b> Number of distinct ICU stays:</b>' ),print(n_icudist), HTML('</br>'),
@@ -154,10 +160,14 @@ body <- dashboardBody(
               ),
               
               box(
+                
+                status = "primary",
                 plotlyOutput("los_graph")
               ),
               
               box(
+               
+                status = "primary",
                 plotlyOutput("age_graph")
               )
               
@@ -222,13 +232,16 @@ body <- dashboardBody(
             h4("There's a total of 58976 admissions registered on the database. Each one has a diferent ID , called HADM_ID. "),
             br(),
             fluidRow(
-              tabsetPanel(
-                id = 'dataset',
-                tabPanel("Admission type", DT::dataTableOutput("mytable1"), plotlyOutput("grafico1")),
-                tabPanel("Admission location", DT::dataTableOutput("mytable2"), plotlyOutput("grafico2")),
-                tabPanel("Dischard location", DT::dataTableOutput("mytable3"),  plotlyOutput("grafico3")),
-                tabPanel("Insurance", DT::dataTableOutput("mytable4"),  plotlyOutput("grafico4")),
-                tabPanel("Diagnosis", DT::dataTableOutput("mytable5"),  plotlyOutput("grafico5")),
+              box(
+                width = 10,status = "primary",
+                tabsetPanel(
+                  id = 'dataset',
+                  tabPanel("Admission type", DT::dataTableOutput("mytable1"), plotlyOutput("grafico1")),
+                  tabPanel("Admission location", DT::dataTableOutput("mytable2"), plotlyOutput("grafico2")),
+                  tabPanel("Dischard location", DT::dataTableOutput("mytable3"),  plotlyOutput("grafico3")),
+                  tabPanel("Insurance", DT::dataTableOutput("mytable4"),  plotlyOutput("grafico4")),
+                  tabPanel("Diagnosis", DT::dataTableOutput("mytable5"),  plotlyOutput("grafico5")),
+                ),
               )
               
             )
@@ -435,7 +448,8 @@ server <- (function(input, output) {
       type="histogram"
     ) %>%
       layout(title= "Insurance " ,
-             xaxis= list(title = "Insurance" )
+             xaxis= list(title = "Insurance" ,
+                         categoryorder = "total descending")
              
       )
   })
@@ -447,7 +461,7 @@ server <- (function(input, output) {
   output$grafico5 <- renderPlotly({
     plot_ly(
       data = diagnosis_temp,
-      y = ~D,
+      x = ~D,
       type="bar"
     ) %>%
       layout(title= "Diagnosis " ,
