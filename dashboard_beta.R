@@ -73,6 +73,18 @@ dfmerge$LANGUAGE <- as.factor(dfmerge$LANGUAGE)
 
 ADMISSIONS$DIAGNOSIS <- as.factor(ADMISSIONS$DIAGNOSIS)
 
+admission_temp <- data.frame(unclass(summary(as.factor(ADMISSIONS$ADMISSION_TYPE))), check.names = FALSE, stringsAsFactors = TRUE)
+colnames(admission_temp) <- c("Admission type frequency")
+admission_loc <- data.frame(unclass(summary(as.factor(ADMISSIONS$ADMISSION_LOCATION))), check.names = FALSE, stringsAsFactors = TRUE)
+colnames(admission_loc) <- c("Admission location frequency")
+discharge_loc <- data.frame(unclass(summary(as.factor(ADMISSIONS$DISCHARGE_LOCATION))), check.names = FALSE, stringsAsFactors = TRUE)
+colnames(discharge_loc) <- c("Discharge location frequency")
+insurance_temp <- data.frame(unclass(summary(as.factor(ADMISSIONS$INSURANCE))), check.names = FALSE, stringsAsFactors = TRUE)
+colnames(insurance_temp) <- c("Insurance frequency")
+diagnosis_temp <- data.frame(unclass(summary(as.factor(ADMISSIONS$DIAGNOSIS))), check.names = FALSE, stringsAsFactors = TRUE)
+colnames(diagnosis_temp) <- c("D")
+
+
 dfmerge$X <- NULL
 dfmerge$ROW_ID.x <- NULL
 dfmerge$...1 <- NULL
@@ -208,11 +220,16 @@ body <- dashboardBody(
             h3("Details of every patient admission on the hospital"),
             br(),
             h4("There's a total of 58976 admissions registered on the database. Each one has a diferent ID , called HADM_ID. "),
+            br(),
             fluidRow(
-              box(
-                verbatimTextOutput("diseases")
+              tabsetPanel(
+                id = 'dataset',
+                tabPanel("Admission type", DT::dataTableOutput("mytable1"), plotlyOutput("grafico1")),
+                tabPanel("Admission location", DT::dataTableOutput("mytable2"), plotlyOutput("grafico2")),
+                tabPanel("Dischard location", DT::dataTableOutput("mytable3"),  plotlyOutput("grafico3")),
+                tabPanel("Insurance", DT::dataTableOutput("mytable4"),  plotlyOutput("grafico4")),
+                tabPanel("Diagnosis", DT::dataTableOutput("mytable5"),  plotlyOutput("grafico5")),
               )
-              
               
             )
             
@@ -300,9 +317,10 @@ server <- (function(input, output) {
       )
   })
   
-  output$diseases <- renderPrint({
-    summary(ADMISSIONS$DIAGNOSIS)
-  })
+  output$diseases <- renderDataTable(
+    admission_temp
+   
+  )
   
   
   dfmerge2 <- subset(dfmerge, select = -c(HOSPITAL_EXPIRE_FLAG,HAS_CHARTEVENTS_DATA, EXPIRE_FLAG))
@@ -356,6 +374,86 @@ server <- (function(input, output) {
   output$summary <- renderPrint({
     
     summary(fully_filtered())
+  })
+  
+  output$mytable1 <- DT::renderDataTable({
+    DT::datatable(admission_temp)
+  })
+  
+  output$grafico1 <- renderPlotly({
+    plot_ly(
+      data = ADMISSIONS,
+      x = ~ADMISSION_TYPE,
+      type="histogram"
+    ) %>%
+      layout(title= "Admission Type " ,
+             xaxis= list(title = "Type" )
+             
+      )
+  })
+  
+  output$mytable2 <- DT::renderDataTable({
+    DT::datatable(admission_loc)
+  })
+  
+  output$grafico2 <- renderPlotly({
+    plot_ly(
+      data = ADMISSIONS,
+      x = ~ADMISSION_LOCATION,
+      type="histogram"
+    ) %>%
+      layout(title= "Admission Location " ,
+             xaxis= list(title = "Location" )
+             
+      )
+  })
+  
+  output$mytable3 <- DT::renderDataTable({
+    DT::datatable(discharge_loc)
+  })
+  
+  output$grafico3 <- renderPlotly({
+    plot_ly(
+      data = ADMISSIONS,
+      x = ~DISCHARGE_LOCATION,
+      type="histogram"
+    ) %>%
+      layout(title= "Discharge Location " ,
+             xaxis= list(title = "Location" )
+             
+      )
+  })
+  
+  output$mytable4 <- DT::renderDataTable({
+    DT::datatable(insurance_temp)
+  })
+  
+  output$grafico4 <- renderPlotly({
+    plot_ly(
+      data = ADMISSIONS,
+      x = ~INSURANCE,
+      type="histogram"
+    ) %>%
+      layout(title= "Insurance " ,
+             xaxis= list(title = "Insurance" )
+             
+      )
+  })
+  
+  output$mytable5 <- DT::renderDataTable({
+    DT::datatable(diagnosis_temp)
+  })
+  
+  output$grafico5 <- renderPlotly({
+    plot_ly(
+      data = diagnosis_temp,
+      y = ~D,
+      type="bar"
+    ) %>%
+      layout(title= "Diagnosis " ,
+             xaxis= list(title = "Diagnosis" )
+             
+      )
   })
   
   
