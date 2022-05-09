@@ -132,7 +132,8 @@ sidebar <- dashboardSidebar(
     menuItem("Pesquisa", icon = icon("search"), tabName = "search",
              badgeLabel = "beta", badgeColor = "green"),
     menuItem("Patients", tabName = "patients", icon = icon("hospital-user")),
-    menuItem("Admissions", tabName = "admissions", icon = icon("book-medical"))
+    menuItem("Admissions", tabName = "admissions", icon = icon("book-medical")),
+    menuItem("Diagnoses", tabName = "diagnoses", icon = icon("stethoscope"))
   )
 )
 
@@ -249,9 +250,40 @@ body <- dashboardBody(
           
             
             
-    ), #fim search
+    ), #fim admissions
     
-    
+    tabItem(tabName = "diagnoses",
+            h5("ICD-9 Codes"),
+            fluidRow(
+              box(
+                selectInput( "code9", "Select the ICD9 code", choices = c(
+                  "INFECTIOUS AND PARASITIC DISEASES (001-139)",
+                  "NEOPLASMS (140-239)",
+                  "ENDOCRINE, NUTRITIONAL AND METABOLIC DISEASES, AND IMMUNITY DISORDERS (240-279)",
+                  "DISEASES OF THE BLOOD AND BLOOD-FORMING ORGANS (280-289)",
+                  "MENTAL DISORDERS (290-319)",
+                  "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)",
+                  "DISEASES OF THE CIRCULATORY SYSTEM (390-459)",
+                  "DISEASES OF THE RESPIRATORY SYSTEM (460-519)",
+                  "DISEASES OF THE DIGESTIVE SYSTEM (520-579)",
+                  "DISEASES OF THE GENITOURINARY SYSTEM (580-629)",
+                  "COMPLICATIONS OF PREGNANCY, CHILDBIRTH, AND THE PUERPERIUM (630-679)",
+                  "DISEASES OF THE SKIN AND SUBCUTANEOUS TISSUE (680-709)",
+                  "DISEASES OF THE MUSCULOSKELETAL SYSTEM AND CONNECTIVE TISSUE (710-739)",
+                  "CONGENITAL ANOMALIES (740-759)",
+                  "CERTAIN CONDITIONS ORIGINATING IN THE PERINATAL PERIOD (760-779)",
+                  "SYMPTOMS, SIGNS, AND ILL-DEFINED CONDITIONS (780-799)",
+                  "INJURY AND POISONING (800-999)",
+                  "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)",
+                  "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)"
+                  
+                  
+                  ) 
+                )
+              )
+            )
+    ),
+            
     
     tabItem(tabName = "search",
             h5("Here you can make different kind of searches"),
