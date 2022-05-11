@@ -8,10 +8,11 @@ library(eeptools)
 library(tibble)
 library(DT)
 
-ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
-ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
-PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
-dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
+# ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+# ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
+# PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+# dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
+# DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
 
 
 n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
@@ -253,7 +254,7 @@ body <- dashboardBody(
     ), #fim admissions
     
     tabItem(tabName = "diagnoses",
-            h5("ICD-9 Codes"),
+            h5("ICD-9 Codes -Diseases and Parasitic Diseases"),
             fluidRow(
               box(
                 selectInput( "code9", "Select the ICD9 code", choices = c(
@@ -502,7 +503,10 @@ server <- (function(input, output) {
       )
   })
   
+  #### DIAGNOSES ####
   
+  infections139 <-filter(DIAGNOSES_ICD, ICD9_CODE <= 1398)
+  neoplasms239 <- filter(DIAGNOSES_ICD)
 })
 
 shinyApp(ui, server)
