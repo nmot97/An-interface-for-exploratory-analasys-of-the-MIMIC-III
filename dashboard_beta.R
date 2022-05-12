@@ -506,7 +506,21 @@ server <- (function(input, output) {
   #### DIAGNOSES ####
   
   infections139 <-filter(DIAGNOSES_ICD, ICD9_CODE <= 1398)
-  neoplasms239 <- filter(DIAGNOSES_ICD)
+  neoplasms239 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 1400 , ICD9_CODE <= 2399)
+  endocrine279 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
+  endocrine279 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
+  blood289 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2800 , ICD9_CODE <= 2899)
+  mental319 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2900 , ICD9_CODE <= 319)
+  nervous389 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 3200 , ICD9_CODE <= 3899)
+  circulatory459 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 3900 , ICD9_CODE <= 4599)
+  respiratory519 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 460 , ICD9_CODE <= 5199)
+  digestive579 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 5200 , ICD9_CODE <= 5799)
+  genitourinary629 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 5800 , ICD9_CODE <= 6299)
+  pregnancy679 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 6300 , ICD9_CODE <= 67914)
+  skin709 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 6800 , ICD9_CODE <= 7099)
+  muscle739 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7100 , ICD9_CODE <= 7399)
+  
+  
 })
 
 shinyApp(ui, server)
