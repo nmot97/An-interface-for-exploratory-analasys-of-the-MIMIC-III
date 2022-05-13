@@ -1,5 +1,6 @@
 ## app.R ##
 
+library(readr)
 library(shiny)
 library(shinydashboard)
 library(tidyverse)
@@ -8,11 +9,20 @@ library(eeptools)
 library(tibble)
 library(DT)
 
+#   WINDOWS
 # ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
 # ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
 # PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
 # dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
 # DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
+
+#LINUX
+
+ADMISSIONS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/ADMISSIONS.csv")
+ICUSTAYS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/ICUSTAYS.csv")
+PATIENTS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/PATIENTS.csv")
+dfmerge <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/dfmerge.csv")
+DIAGNOSES_ICD <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/DIAGNOSES_ICD.csv")
 
 
 n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
@@ -551,9 +561,14 @@ server <- (function(input, output) {
       data = diagnosesPlot,
       x = ~ICD9CODE,
       y = ~Frequency,
-      type = "bar"
+      type = "bar",
+      text = ~Frequency,
+      textposition = "auto",
+      hoverinfo = "text",
+      hovertext = paste("IC9-Code:", diagnosesPlot$ICD9CODE)
     ) %>%
       layout(title= "Frequency of each ICD9 code"
+             
       )
     
     
