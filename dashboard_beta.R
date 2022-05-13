@@ -124,6 +124,45 @@ dfmerge$GENDER <- as.factor(dfmerge$GENDER)
 dfmerge$DIAGNOSIS <- as.factor(dfmerge$DIAGNOSIS)
 
 
+#### DIAGNOSES ####
+v <- DIAGNOSES_ICD  %>% filter(str_detect(ICD9_CODE, "^V"))
+e <- DIAGNOSES_ICD  %>% filter(str_detect(ICD9_CODE, "^E"))
+na <- sum(is.na(DIAGNOSES_ICD$ICD9_CODE))
+infections139 <-filter(DIAGNOSES_ICD, ICD9_CODE <= 1398)
+neoplasms239 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 1400 , ICD9_CODE <= 2399)
+endocrine279 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
+endocrine279 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
+blood289 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2800 , ICD9_CODE <= 2899)
+mental319 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2900 , ICD9_CODE <= 319)
+nervous389 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 3200 , ICD9_CODE <= 3899)
+circulatory459 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 3900 , ICD9_CODE <= 4599)
+respiratory519 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 460 , ICD9_CODE <= 5199)
+digestive579 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 5200 , ICD9_CODE <= 5799)
+genitourinary629 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 5800 , ICD9_CODE <= 6299)
+pregnancy679 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 6300 , ICD9_CODE <= 67914)
+skin709 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 6800 , ICD9_CODE <= 7099)
+muscle739 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7100 , ICD9_CODE <= 7399)
+congenital759 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7400 , ICD9_CODE <= 7599)
+perinatal779 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7600 , ICD9_CODE <= 7799)
+symptoms799 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7800 , ICD9_CODE <= 7999)
+injury999 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 8000 , ICD9_CODE <= 9999)
+
+ICD9CODE <- c("0-139", "140-239", "240-279", "280-289", "290-319", "320-389",
+          "390-459", "460-519", "520-579","580-629","630-679","680-709","710-739",
+          "740-759","760-779", "780-799", "800-999","V01-V091","E000-E999", "NA"
+          )
+Frequency <- c(nrow(infections139), nrow(neoplasms239), nrow(endocrine279), nrow(blood289), nrow(mental319),
+        nrow(nervous389), nrow(circulatory459), nrow(respiratory519), nrow(digestive579), nrow(genitourinary629),
+        nrow(pregnancy679), nrow(skin709), nrow(muscle739), nrow(congenital759), nrow(perinatal779), nrow(symptoms799),
+        nrow(injury999), nrow(v), nrow(e), sum(is.na(DIAGNOSES_ICD$ICD9_CODE))
+        )
+
+diagnosesPlot <- data.frame(ICD9CODE, Frequency)
+
+print (df)
+
+
+
 header <- dashboardHeader(title="MIMIC-III"
 )
 
@@ -279,9 +318,14 @@ body <- dashboardBody(
                   "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)"
                   
                   
-                  ) 
-                )
+                    ) 
+                  )
+              ), #fim box
+              
+              box(
+                plotlyOutput("graficoICDS")
               )
+              
             )
     ),
             
@@ -349,7 +393,7 @@ server <- (function(input, output) {
       )
     
     
-  })
+   })
   
   output$age_graph <- renderPlotly({
     plot_ly(
@@ -467,7 +511,7 @@ server <- (function(input, output) {
       layout(title= "Discharge Location " ,
              xaxis= list(title = "Location" )
              
-      )
+      ) 
   })
   
   output$mytable4 <- DT::renderDataTable({
@@ -502,28 +546,19 @@ server <- (function(input, output) {
              
       )
   })
-  
-  #### DIAGNOSES ####
-  v <- DIAGNOSES_ICD  %>% filter(str_detect(ICD9_CODE, "^V"))
-  e <- DIAGNOSES_ICD  %>% filter(str_detect(ICD9_CODE, "^E"))
-  infections139 <-filter(DIAGNOSES_ICD, ICD9_CODE <= 1398)
-  neoplasms239 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 1400 , ICD9_CODE <= 2399)
-  endocrine279 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
-  endocrine279 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
-  blood289 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2800 , ICD9_CODE <= 2899)
-  mental319 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2900 , ICD9_CODE <= 319)
-  nervous389 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 3200 , ICD9_CODE <= 3899)
-  circulatory459 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 3900 , ICD9_CODE <= 4599)
-  respiratory519 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 460 , ICD9_CODE <= 5199)
-  digestive579 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 5200 , ICD9_CODE <= 5799)
-  genitourinary629 <-filter(DIAGNOSES_ICD, ICD9_CODE >= 5800 , ICD9_CODE <= 6299)
-  pregnancy679 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 6300 , ICD9_CODE <= 67914)
-  skin709 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 6800 , ICD9_CODE <= 7099)
-  muscle739 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7100 , ICD9_CODE <= 7399)
-  congenital759 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7400 , ICD9_CODE <= 7599)
-  perinatal779 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7600 , ICD9_CODE <= 7799)
-  symptoms799 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7800 , ICD9_CODE <= 7999)
-  injury999 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 8000 , ICD9_CODE <= 9999)
+  output$graficoICDS <-  renderPlotly({
+    plot_ly(
+      data = diagnosesPlot,
+      x = ~ICD9CODE,
+      y = ~Frequency,
+      type = "bar"
+    ) %>%
+      layout(title= "Frequency of each ICD9 code"
+      )
+    
+    
+  })
+
   })
 
 shinyApp(ui, server)
