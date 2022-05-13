@@ -504,7 +504,8 @@ server <- (function(input, output) {
   })
   
   #### DIAGNOSES ####
-  
+  v <- DIAGNOSES_ICD  %>% filter(str_detect(ICD9_CODE, "^V"))
+  e <- DIAGNOSES_ICD  %>% filter(str_detect(ICD9_CODE, "^E"))
   infections139 <-filter(DIAGNOSES_ICD, ICD9_CODE <= 1398)
   neoplasms239 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 1400 , ICD9_CODE <= 2399)
   endocrine279 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
@@ -519,9 +520,11 @@ server <- (function(input, output) {
   pregnancy679 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 6300 , ICD9_CODE <= 67914)
   skin709 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 6800 , ICD9_CODE <= 7099)
   muscle739 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7100 , ICD9_CODE <= 7399)
-  
-  
-})
+  congenital759 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7400 , ICD9_CODE <= 7599)
+  perinatal779 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7600 , ICD9_CODE <= 7799)
+  symptoms799 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7800 , ICD9_CODE <= 7999)
+  injury999 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 8000 , ICD9_CODE <= 9999)
+  })
 
 shinyApp(ui, server)
 
