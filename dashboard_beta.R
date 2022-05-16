@@ -8,21 +8,22 @@ library(plotly)
 library(eeptools)
 library(tibble)
 library(DT)
+library(ggplot2)
 
-#   WINDOWS
-# ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
-# ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
-# PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
-# dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
-# DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
+  # WINDOWS
+ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
+PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
+DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
 
 #LINUX
 
-ADMISSIONS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/ADMISSIONS.csv")
-ICUSTAYS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/ICUSTAYS.csv")
-PATIENTS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/PATIENTS.csv")
-dfmerge <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/dfmerge.csv")
-DIAGNOSES_ICD <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/DIAGNOSES_ICD.csv")
+# ADMISSIONS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/ADMISSIONS.csv")
+# ICUSTAYS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/ICUSTAYS.csv")
+# PATIENTS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/PATIENTS.csv")
+# dfmerge <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/dfmerge.csv")
+# DIAGNOSES_ICD <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/DIAGNOSES_ICD.csv")
 
 
 n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
@@ -169,7 +170,7 @@ Frequency <- c(nrow(infections139), nrow(neoplasms239), nrow(endocrine279), nrow
 
 diagnosesPlot <- data.frame(ICD9CODE, Frequency)
 
-print (df)
+# print (df)
 
 
 
@@ -183,7 +184,13 @@ sidebar <- dashboardSidebar(
              badgeLabel = "beta", badgeColor = "green"),
     menuItem("Patients", tabName = "patients", icon = icon("hospital-user")),
     menuItem("Admissions", tabName = "admissions", icon = icon("book-medical")),
-    menuItem("Diagnoses", tabName = "diagnoses", icon = icon("stethoscope"))
+    menuItem("Diagnoses", tabName = "diagnoses", icon = icon("stethoscope"),
+             startExpanded = FALSE,
+             menuSubItem("General info",
+                         tabName = "diagnoses1"),
+             menuSubItem("Especific ICD9 Code",
+                         tabName = "diagnoses2")
+             )
   )
 )
 
@@ -302,17 +309,31 @@ body <- dashboardBody(
             
     ), #fim admissions
     
-    tabItem(tabName = "diagnoses",
+    tabItem(tabName = "diagnoses1",
+            h5("ICD-9 Codes -Diseases and Parasitic Diseases"),
+            fluidRow(
+              
+              box(
+                plotlyOutput("graficoICDS")
+              )
+            
+              
+            )
+    ),
+    
+    
+    tabItem(tabName = "diagnoses2",
             h5("ICD-9 Codes -Diseases and Parasitic Diseases"),
             fluidRow(
               box(
+                width = 3,
                 selectInput( "code9", "Select the ICD9 code", choices = c(
-                  "INFECTIOUS AND PARASITIC DISEASES (001-139)",
-                  "NEOPLASMS (140-239)",
-                  "ENDOCRINE, NUTRITIONAL AND METABOLIC DISEASES, AND IMMUNITY DISORDERS (240-279)",
-                  "DISEASES OF THE BLOOD AND BLOOD-FORMING ORGANS (280-289)",
-                  "MENTAL DISORDERS (290-319)",
-                  "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)",
+                  "INFECTIOUS AND PARASITIC DISEASES (001-139)" =" parasit" ,
+                  "NEOPLASMS (140-239)" = "neoplasm",
+                  "ENDOCRINE, NUTRITIONAL AND METABOLIC DISEASES, AND IMMUNITY DISORDERS (240-279)" = "endocrine",
+                  "DISEASES OF THE BLOOD AND BLOOD-FORMING ORGANS (280-289)" = "blood",
+                  "MENTAL DISORDERS (290-319)" = "mental",
+                  "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)" ,
                   "DISEASES OF THE CIRCULATORY SYSTEM (390-459)",
                   "DISEASES OF THE RESPIRATORY SYSTEM (460-519)",
                   "DISEASES OF THE DIGESTIVE SYSTEM (520-579)",
@@ -328,16 +349,24 @@ body <- dashboardBody(
                   "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)"
                   
                   
-                    ) 
-                  )
+                ) 
+                )
               ), #fim box
               
+              
               box(
-                plotlyOutput("graficoICDS")
+                width = 11,
+                plotlyOutput("icddiagnoses")
               )
               
             )
     ),
+    
+    
+    
+    
+    
+    
             
     
     tabItem(tabName = "search",
@@ -573,6 +602,42 @@ server <- (function(input, output) {
     
     
   })
+  
+  output$icddiagnoses <- renderPlotly({
+    
+    if(input$code9 == "blood"){
+      counts <- as.data.frame(table(blood289$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+              )
+    } 
+    else if (input$code9 == "neoplasm") {
+      counts <- as.data.frame(table(neoplasms239$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+
+    }
+   })
+  
 
   })
 
