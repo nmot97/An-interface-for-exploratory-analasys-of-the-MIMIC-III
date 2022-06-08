@@ -19,8 +19,9 @@ library(ggplot2)
 
 #LINUX
 
+setwd("~/Documents/Github/MIMIC-III")
 ADMISSIONS <- read_csv("~/Documents/Github/MIMIC-III/ADMISSIONS.csv")
-ICUSTAYS <- read_csv("~/Documents/Github/SSD/ICUSTAYS.csv")
+ICUSTAYS <- read_csv("~/Documents/Github/MIMIC-III/ICUSTAYS.csv")
 PATIENTS <- read_csv("~/Documents/Github/MIMIC-III/PATIENTS.csv")
 dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
 DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
