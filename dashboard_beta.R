@@ -11,19 +11,19 @@ library(DT)
 library(ggplot2)
 
   # WINDOWS
-ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
-ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
-PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
-dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
-DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
+# ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+# ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
+# PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+# dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
+# DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
 
 #LINUX
 
-# ADMISSIONS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/ADMISSIONS.csv")
-# ICUSTAYS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/ICUSTAYS.csv")
-# PATIENTS <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/PATIENTS.csv")
-# dfmerge <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/dfmerge.csv")
-# DIAGNOSES_ICD <- read_csv("~/Desktop/MIMIC-III_github/MIMIC-III/DIAGNOSES_ICD.csv")
+ADMISSIONS <- read_csv("~/Documents/Github/MIMIC-III/ADMISSIONS.csv")
+ICUSTAYS <- read_csv("~/Documents/Github/SSD/ICUSTAYS.csv")
+PATIENTS <- read_csv("~/Documents/Github/MIMIC-III/PATIENTS.csv")
+dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
+DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
 
 
 n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
