@@ -11,20 +11,20 @@ library(DT)
 library(ggplot2)
 
   # WINDOWS
-ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
-ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
-PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
-dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
-DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
+# ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+# ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
+# PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+# dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
+# DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
 
 #LINUX
 
-# setwd("~/Documents/Github/MIMIC-III")
-# ADMISSIONS <- read_csv("~/Documents/Github/MIMIC-III/ADMISSIONS.csv")
-# ICUSTAYS <- read_csv("~/Documents/Github/MIMIC-III/ICUSTAYS.csv")
-# PATIENTS <- read_csv("~/Documents/Github/MIMIC-III/PATIENTS.csv")
-# dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
-# DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
+setwd("~/Documents/Github/MIMIC-III")
+ADMISSIONS <- read_csv("~/Documents/Github/MIMIC-III/ADMISSIONS.csv")
+ICUSTAYS <- read_csv("~/Documents/Github/MIMIC-III/ICUSTAYS.csv")
+PATIENTS <- read_csv("~/Documents/Github/MIMIC-III/PATIENTS.csv")
+dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
+DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
 
 
 n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
@@ -933,3 +933,9 @@ server <- (function(input, output) {
 
 shinyApp(ui, server)
 
+#TODO 13/6/2022
+
+#CRIAR SUMMARY DE GRUPO DE DOENTES NO MENU DIAGNOSES + LISTA DE PACIENTES COM ESSA DOENÇA
+#CRIAR SUBMENU DOENTES + item de cada paciente
+#corrigir legenda do grafico
+#general info precisa de legenda!!
