@@ -11,20 +11,20 @@ library(DT)
 library(ggplot2)
 
   # WINDOWS
-# ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
-# ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
-# PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
-# dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
-# DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
+ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
+PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
+DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
 
 #LINUX
 
-setwd("~/Documents/Github/MIMIC-III")
-ADMISSIONS <- read_csv("~/Documents/Github/MIMIC-III/ADMISSIONS.csv")
-ICUSTAYS <- read_csv("~/Documents/Github/MIMIC-III/ICUSTAYS.csv")
-PATIENTS <- read_csv("~/Documents/Github/MIMIC-III/PATIENTS.csv")
-dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
-DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
+# setwd("~/Documents/Github/MIMIC-III")
+# ADMISSIONS <- read_csv("~/Documents/Github/MIMIC-III/ADMISSIONS.csv")
+# ICUSTAYS <- read_csv("~/Documents/Github/MIMIC-III/ICUSTAYS.csv")
+# PATIENTS <- read_csv("~/Documents/Github/MIMIC-III/PATIENTS.csv")
+# dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
+# DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
 
 
 n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
@@ -329,25 +329,25 @@ body <- dashboardBody(
               box(
                 width = 3,
                 selectInput( "code9", "Select the ICD9 code", choices = c(
-                  "INFECTIOUS AND PARASITIC DISEASES (001-139)" =" parasit" ,
+                  "INFECTIOUS AND PARASITIC DISEASES (001-139)" ="parasit",
                   "NEOPLASMS (140-239)" = "neoplasm",
                   "ENDOCRINE, NUTRITIONAL AND METABOLIC DISEASES, AND IMMUNITY DISORDERS (240-279)" = "endocrine",
                   "DISEASES OF THE BLOOD AND BLOOD-FORMING ORGANS (280-289)" = "blood",
                   "MENTAL DISORDERS (290-319)" = "mental",
-                  "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)" ,
-                  "DISEASES OF THE CIRCULATORY SYSTEM (390-459)",
-                  "DISEASES OF THE RESPIRATORY SYSTEM (460-519)",
-                  "DISEASES OF THE DIGESTIVE SYSTEM (520-579)",
-                  "DISEASES OF THE GENITOURINARY SYSTEM (580-629)",
-                  "COMPLICATIONS OF PREGNANCY, CHILDBIRTH, AND THE PUERPERIUM (630-679)",
-                  "DISEASES OF THE SKIN AND SUBCUTANEOUS TISSUE (680-709)",
-                  "DISEASES OF THE MUSCULOSKELETAL SYSTEM AND CONNECTIVE TISSUE (710-739)",
-                  "CONGENITAL ANOMALIES (740-759)",
-                  "CERTAIN CONDITIONS ORIGINATING IN THE PERINATAL PERIOD (760-779)",
-                  "SYMPTOMS, SIGNS, AND ILL-DEFINED CONDITIONS (780-799)",
-                  "INJURY AND POISONING (800-999)",
-                  "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)",
-                  "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)"
+                  "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)" = "nervous",
+                  "DISEASES OF THE CIRCULATORY SYSTEM (390-459)" = "circulatory",
+                  "DISEASES OF THE RESPIRATORY SYSTEM (460-519)" = "respiratory",
+                  "DISEASES OF THE DIGESTIVE SYSTEM (520-579)" = "digestive",
+                  "DISEASES OF THE GENITOURINARY SYSTEM (580-629)" = "genitourinary",
+                  "COMPLICATIONS OF PREGNANCY, CHILDBIRTH, AND THE PUERPERIUM (630-679)" = "pregnancy",
+                  "DISEASES OF THE SKIN AND SUBCUTANEOUS TISSUE (680-709)" = "skin",
+                  "DISEASES OF THE MUSCULOSKELETAL SYSTEM AND CONNECTIVE TISSUE (710-739)" ="muscle", 
+                  "CONGENITAL ANOMALIES (740-759)" = "anomalies",
+                  "CERTAIN CONDITIONS ORIGINATING IN THE PERINATAL PERIOD (760-779)" = "perinatal",
+                  "SYMPTOMS, SIGNS, AND ILL-DEFINED CONDITIONS (780-799)" ="signs",
+                  "INJURY AND POISONING (800-999)" ="poison",
+                  "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)" ="v1",
+                  "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)" = "v2"
                   
                   
                 ) 
@@ -637,6 +637,295 @@ server <- (function(input, output) {
         )
 
     }
+    else if (input$code9 == "parasit") {
+      counts <- as.data.frame(table(infections139$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    else if (input$code9 == "endocrine") {
+      counts <- as.data.frame(table(endocrine279$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    
+    else if (input$code9 == "mental") {
+      counts <- as.data.frame(table(mental319$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "nervous") {
+      counts <- as.data.frame(table(nervous389$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "circulatory") {
+      counts <- as.data.frame(table(circulatory459$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    else if (input$code9 == "respiratory") {
+      counts <- as.data.frame(table(respiratory519$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "digestive") {
+      counts <- as.data.frame(table(digestive579$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "genitourinary") {
+      counts <- as.data.frame(table(genitourinary629$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "pregnancy") {
+      counts <- as.data.frame(table(pregnancy679$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "skin") {
+      counts <- as.data.frame(table(skin709$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "muscle") {
+      counts <- as.data.frame(table(muscle739$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "anomalies") {
+      counts <- as.data.frame(table(congenital759$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "perinatal") {
+      counts <- as.data.frame(table(perinatal779$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "signs") {
+      counts <- as.data.frame(table(symptoms799$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "poison") {
+      counts <- as.data.frame(table(injury999$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    
+    else if (input$code9 == "v1") {
+      counts <- as.data.frame(table(v$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
+    else if (input$code9 == "v2") {
+      counts <- as.data.frame(table(e$ICD9_CODE))
+      
+      plot_ly(
+        data = counts,
+        x = ~Var1,
+        y=~Freq,
+        type = "bar"
+        
+      ) %>%
+        layout(title= "Frequency of each ICD9 ",
+               xaxis= list(title = "Insurance" ,
+                           categoryorder = "total descending")
+        )
+      
+    }
+    
    })
   
 
