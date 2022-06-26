@@ -144,7 +144,6 @@ na <- sum(is.na(DIAGNOSES_ICD$ICD9_CODE))
 infections139 <-filter(DIAGNOSES_ICD, ICD9_CODE <= 1398)
 neoplasms239 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 1400 , ICD9_CODE <= 2399)
 endocrine279 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
-endocrine279 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
 blood289 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2800 , ICD9_CODE <= 2899)
 mental319 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 2900 , ICD9_CODE <= 319)
 nervous389 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 3200 , ICD9_CODE <= 3899)
@@ -173,6 +172,31 @@ Frequency <- c(nrow(infections139), nrow(neoplasms239), nrow(endocrine279), nrow
 diagnosesPlot <- data.frame(ICD9CODE, Frequency)
 
 # print (df)
+
+dfmerge2 <- merge(dfmerge,DIAGNOSES_ICD,by="SUBJECT_ID")
+dfmerge2 <- dfmerge2[ -c(2,4,5,6,11,15,16,18,19,21,22,23,24,28,29,30) ]
+colnames(dfmerge2)[colnames(dfmerge2) == 'HADM_ID.x'] <- 'HADM_ID'
+
+
+temp1 <-filter(dfmerge2, ICD9_CODE <= 1398)
+temp2 <- filter(dfmerge2, ICD9_CODE >= 1400 , ICD9_CODE <= 2399)
+temp3 <- filter(dfmerge2, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
+temp4 <- filter(dfmerge2, ICD9_CODE >= 2800 , ICD9_CODE <= 2899)
+temp5 <- filter(dfmerge2, ICD9_CODE >= 2900 , ICD9_CODE <= 319)
+temp6 <- filter(dfmerge2, ICD9_CODE >= 3200 , ICD9_CODE <= 3899)
+temp7 <-filter(dfmerge2, ICD9_CODE >= 3900 , ICD9_CODE <= 4599)
+temp8 <-filter(dfmerge2, ICD9_CODE >= 460 , ICD9_CODE <= 5199)
+temp9 <-filter(dfmerge2, ICD9_CODE >= 5200 , ICD9_CODE <= 5799)
+temp10 <-filter(dfmerge2, ICD9_CODE >= 5800 , ICD9_CODE <= 6299)
+temp11 <- filter(dfmerge2, ICD9_CODE >= 6300 , ICD9_CODE <= 67914)
+temp12 <- filter(dfmerge2, ICD9_CODE >= 6800 , ICD9_CODE <= 7099)
+temp13 <- filter(dfmerge2, ICD9_CODE >= 7100 , ICD9_CODE <= 7399)
+temp14 <- filter(dfmerge2, ICD9_CODE >= 7400 , ICD9_CODE <= 7599)
+temp15 <- filter(dfmerge2, ICD9_CODE >= 7600 , ICD9_CODE <= 7799)
+temp16 <- filter(dfmerge2, ICD9_CODE >= 7800 , ICD9_CODE <= 7999)
+temp17 <- filter(dfmerge2, ICD9_CODE >= 8000 , ICD9_CODE <= 9999)
+temp18<- DIAGNOSES_ICD  %>% filter(str_detect(ICD9_CODE, "^V"))
+temp19 <- DIAGNOSES_ICD  %>% filter(str_detect(ICD9_CODE, "^E"))
 
 
 
@@ -317,13 +341,46 @@ body <- dashboardBody(
               
               box(
                 plotlyOutput("graficoICDS")
-              )
+              ),
             
+              box(
+                h3("Select IC9 code to see a summary:"),
+                width = 3,
+                selectInput( "code92", "Select the ICD9 code", choices = c(
+                  "-",
+                  "INFECTIOUS AND PARASITIC DISEASES (001-139)" ="parasit",
+                  "NEOPLASMS (140-239)" = "neoplasm",
+                  "ENDOCRINE, NUTRITIONAL AND METABOLIC DISEASES, AND IMMUNITY DISORDERS (240-279)" = "endocrine",
+                  "DISEASES OF THE BLOOD AND BLOOD-FORMING ORGANS (280-289)" = "blood",
+                  "MENTAL DISORDERS (290-319)" = "mental",
+                  "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)" = "nervous",
+                  "DISEASES OF THE CIRCULATORY SYSTEM (390-459)" = "circulatory",
+                  "DISEASES OF THE RESPIRATORY SYSTEM (460-519)" = "respiratory",
+                  "DISEASES OF THE DIGESTIVE SYSTEM (520-579)" = "digestive",
+                  "DISEASES OF THE GENITOURINARY SYSTEM (580-629)" = "genitourinary",
+                  "COMPLICATIONS OF PREGNANCY, CHILDBIRTH, AND THE PUERPERIUM (630-679)" = "pregnancy",
+                  "DISEASES OF THE SKIN AND SUBCUTANEOUS TISSUE (680-709)" = "skin",
+                  "DISEASES OF THE MUSCULOSKELETAL SYSTEM AND CONNECTIVE TISSUE (710-739)" ="muscle",
+                  "CONGENITAL ANOMALIES (740-759)" = "anomalies",
+                  "CERTAIN CONDITIONS ORIGINATING IN THE PERINATAL PERIOD (760-779)" = "perinatal",
+                  "SYMPTOMS, SIGNS, AND ILL-DEFINED CONDITIONS (780-799)" ="signs",
+                  "INJURY AND POISONING (800-999)" ="poison",
+                  "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)" ="v1",
+                  "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)" = "v2"
+
+                  
+                ) 
+                )
+              ),
+              
+              box(
+                verbatimTextOutput("summary2"),  
+              )
               
             )
     ),
     
-    
+    #***************************
     tabItem(tabName = "diagnoses2",
             h5("ICD-9 Codes -Diseases and Parasitic Diseases"),
             fluidRow(
@@ -349,7 +406,7 @@ body <- dashboardBody(
                   "INJURY AND POISONING (800-999)" ="poison",
                   "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)" ="v1",
                   "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)" = "v2"
-                  
+                
                   
                 ) 
                 )
@@ -928,6 +985,98 @@ server <- (function(input, output) {
     }
     
    })
+ 
+  output$summary2 <- renderPrint({
+    
+    if (input$code92 == "parasit"){
+    
+        summary(temp1)
+  
+    } 
+    else if (input$code92 == "neoplasm") {
+      summary(temp2)
+      
+    }
+    else if (input$code92 == "endocrine") {
+      summary(temp3)
+      
+    }
+    
+    else if ( input$code92 == "blood" )
+      
+      summary(temp4)
+   
+   
+    
+    else if (input$code92 == "mental") {
+      summary(temp5)
+      
+    }
+    
+    else if (input$code92 == "nervous") {
+      summary(temp6)
+      
+    }
+    
+    else if (input$code92 == "circulatory") {
+      summary(temp7)
+      
+    }
+    else if (input$code92 == "respiratory") {
+      summary(temp8)
+    }
+    
+    else if (input$code92 == "digestive") {
+      summary(temp9)
+    }
+    
+    else if (input$code92 == "genitourinary") {
+      summary(temp10)
+    }
+    
+    else if (input$code92 == "pregnancy") {
+      summary(temp11)
+      
+    }
+    
+    else if (input$code92 == "skin") {
+      summary(temp12)
+      
+    }
+    
+    else if (input$code92 == "muscle") {
+      summary(temp13)
+    }
+    
+    else if (input$code92== "anomalies") {
+      summary(temp14)
+    }
+    
+    else if (input$code92 == "perinatal") {
+      summary(temp15)
+    }
+    
+    else if (input$code92 == "signs") {
+      summary(temp16)
+    }
+    
+    else if (input$code92 == "poison") {
+      summary(temp17)
+      
+    }
+    
+    
+    else if (input$code92 == "v1") {
+      summary(temp18)
+    }
+    
+    else if (input$code92 == "v2") {
+      summary(temp19)
+    }
+    
+    
+    
+  })
   
 
   })
@@ -936,7 +1085,7 @@ shinyApp(ui, server)
 
 #TODO 13/6/2022
 
-#CRIAR SUMMARY DE GRUPO DE DOENTES NO MENU DIAGNOSES + LISTA DE PACIENTES COM ESSA DOENÃ‡A
+#CRIAR SUMMARY DE GRUPO DE DOENTES NO MENU DIAGNOSES + LISTA DE PACIENTES COM ESSA DOENÇA DONE
 #CRIAR SUBMENU DOENTES + item de cada paciente
 #corrigir legenda do grafico DONE
-#general info precisa de legenda!!
+#general info precisa de legenda!! DONE
