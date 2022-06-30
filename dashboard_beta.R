@@ -208,8 +208,17 @@ sidebar <- dashboardSidebar(
     menuItem("Dashboard", tabName = "home", icon = icon("home")),
     menuItem("Pesquisa", icon = icon("search"), tabName = "search",
              badgeLabel = "beta", badgeColor = "green"),
-    menuItem("Patients", tabName = "patients", icon = icon("hospital-user")),
+    menuItem("Patients", tabName = "patientss", icon = icon("hospital-user"),
+             startExpanded = FALSE,
+             menuSubItem(" General Patient Search",
+                         tabName = "patients"),
+             menuSubItem("Especific Patient Search",
+                         tabName = "patients2")
+             
+    ),
+    
     menuItem("Admissions", tabName = "admissions", icon = icon("book-medical")),
+    
     menuItem("Diagnoses", tabName = "diagnoses", icon = icon("stethoscope"),
              startExpanded = FALSE,
              menuSubItem("General info",
@@ -310,6 +319,22 @@ body <- dashboardBody(
             ), 
             
     ), #fimpatients
+    
+    tabItem(tabName = "patients2",
+            h4("Filter to find general info about patients"),
+            
+  
+            
+    ), #fimpatients
+    
+    
+    
+    
+    
+    
+    
+    
+    
     tabItem(tabName = "admissions",
             h3("Details of every patient admission on the hospital"),
             br(),
@@ -344,7 +369,7 @@ body <- dashboardBody(
               ),
             
               box(
-                h3("Select IC9 code to see a summary:"),
+                h3("Select ICD9 code to see a summary:"),
                 width = 3,
                 selectInput( "code92", "Select the ICD9 code", choices = c(
                   "-",
@@ -1073,8 +1098,6 @@ server <- (function(input, output) {
     else if (input$code92 == "v2") {
       summary(temp19)
     }
-    
-    
     
   })
   
