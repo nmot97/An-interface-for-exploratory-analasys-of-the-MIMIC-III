@@ -322,6 +322,54 @@ body <- dashboardBody(
     
     tabItem(tabName = "patients2",
             h4("Filter to find general info about patients"),
+            sidebarLayout(
+              
+              
+              sidebarPanel(
+                
+                
+                selectInput( "code93", "Select the ICD9 code", choices = c(
+                  "-",
+                  "INFECTIOUS AND PARASITIC DISEASES (001-139)" ="parasit",
+                  "NEOPLASMS (140-239)" = "neoplasm",
+                  "ENDOCRINE, NUTRITIONAL AND METABOLIC DISEASES, AND IMMUNITY DISORDERS (240-279)" = "endocrine",
+                  "DISEASES OF THE BLOOD AND BLOOD-FORMING ORGANS (280-289)" = "blood",
+                  "MENTAL DISORDERS (290-319)" = "mental",
+                  "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)" = "nervous",
+                  "DISEASES OF THE CIRCULATORY SYSTEM (390-459)" = "circulatory",
+                  "DISEASES OF THE RESPIRATORY SYSTEM (460-519)" = "respiratory",
+                  "DISEASES OF THE DIGESTIVE SYSTEM (520-579)" = "digestive",
+                  "DISEASES OF THE GENITOURINARY SYSTEM (580-629)" = "genitourinary",
+                  "COMPLICATIONS OF PREGNANCY, CHILDBIRTH, AND THE PUERPERIUM (630-679)" = "pregnancy",
+                  "DISEASES OF THE SKIN AND SUBCUTANEOUS TISSUE (680-709)" = "skin",
+                  "DISEASES OF THE MUSCULOSKELETAL SYSTEM AND CONNECTIVE TISSUE (710-739)" ="muscle",
+                  "CONGENITAL ANOMALIES (740-759)" = "anomalies",
+                  "CERTAIN CONDITIONS ORIGINATING IN THE PERINATAL PERIOD (760-779)" = "perinatal",
+                  "SYMPTOMS, SIGNS, AND ILL-DEFINED CONDITIONS (780-799)" ="signs",
+                  "INJURY AND POISONING (800-999)" ="poison",
+                  "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)" ="v1",
+                  "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)" = "v2"
+                ) 
+                ),
+                
+                width = 3
+                
+              ),
+              mainPanel(
+                
+                
+                DT::dataTableOutput("doentes"),
+                width = 9
+                
+                
+                
+                
+              ),
+              
+              
+              
+              
+            ), 
             
   
             
@@ -475,7 +523,7 @@ body <- dashboardBody(
 
 ui <- dashboardPage(header, sidebar, body)
 
-
+# ********************************************* SERVER *****************************************************
 server <- (function(input, output) {
   
   output$grafico <- renderPlot({
@@ -1100,6 +1148,99 @@ server <- (function(input, output) {
     }
     
   })
+  
+
+  output$doentes <- DT::renderDataTable({
+    
+    if ( input$code93 == "parasit")
+      DT::datatable(subset(infections139, select = -c(ROW_ID) ) )
+    
+    else if (input$code93 == "neoplasm") {
+      DT::datatable(subset(neoplasms239, select = -c(ROW_ID) ))
+      
+    }
+    else if (input$code93 == "endocrine") {
+      DT::datatable(subset(endocrine279, select = -c(ROW_ID) ))
+      
+    }
+    
+    else if ( input$code93 == "blood" )
+      
+      DT::datatable(subset(blood289, select = -c(ROW_ID) ))
+    
+    
+    
+    else if (input$code93 == "mental") {
+      DT::datatable(subset(mental319, select = -c(ROW_ID) ))
+      
+    }
+    
+    else if (input$code93 == "nervous") {
+      DT::datatable(subset(nervous389, select = -c(ROW_ID) ))
+      
+    }
+    
+    else if (input$code93 == "circulatory") {
+      DT::datatable(subset(circulatory459, select = -c(ROW_ID) ))
+      
+    }
+    else if (input$code93 == "respiratory") {
+      DT::datatable(subset(respiratory519, select = -c(ROW_ID) ))
+    }
+    
+    else if (input$code93 == "digestive") {
+      DT::datatable(subset(digestive579, select = -c(ROW_ID) ))
+    }
+    
+    else if (input$code93 == "genitourinary") {
+      DT::datatable(subset(genitourinary629, select = -c(ROW_ID) ))
+    }
+    
+    else if (input$code93 == "pregnancy") {
+      DT::datatable(subset(pregnancy679, select = -c(ROW_ID) ))
+      
+    }
+    
+    else if (input$code93 == "skin") {
+      DT::datatable(subset(skin709, select = -c(ROW_ID) ))
+      
+    }
+    
+    else if (input$code93 == "muscle") {
+      DT::datatable(subset(muscle739, select = -c(ROW_ID) ))
+    }
+    
+    else if (input$code93== "anomalies") {
+      DT::datatable(subset(congenital759, select = -c(ROW_ID) ))
+    }
+    
+    else if (input$code93 == "perinatal") {
+      DT::datatable(subset(perinatal779, select = -c(ROW_ID) ))
+    }
+    
+    else if (input$code93 == "signs") {
+      DT::datatable(subset(symptoms799, select = -c(ROW_ID) ))
+    }
+    
+    else if (input$code93 == "poison") {
+      DT::datatable(subset(injury999, select = -c(ROW_ID) ))
+      
+    }
+    
+    
+    else if (input$code93 == "v1") {
+      DT::datatable(subset(v, select = -c(ROW_ID) ))
+    }
+    
+    else if (input$code93 == "v2") {
+      DT::datatable(subset(e, select = -c(ROW_ID) ))
+    }
+    
+    
+    })
+    
+   
+  
   
 
   })
