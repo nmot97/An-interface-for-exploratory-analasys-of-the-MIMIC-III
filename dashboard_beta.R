@@ -27,6 +27,8 @@ DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
 # dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
 # DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
 
+colnames(dfmerge)[colnames(dfmerge) == 'SUBJECT_ID.x'] <- 'SUBJECT_ID'
+dfmerge <- dfmerge[-c(29)]
 
 n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
 
@@ -489,6 +491,12 @@ body <- dashboardBody(
               box(
                 width = 11,
                 plotlyOutput("icddiagnoses")
+              ),
+              
+              box(
+                width = 11,
+                
+                plotlyOutput("boxplot")
               )
               
             )
@@ -731,6 +739,233 @@ server <- (function(input, output) {
       layout(title= "Frequency of each ICD9 code"
              
       )
+    
+    
+  })
+  
+  output$boxplot <- renderPlotly({
+    
+    
+    if (input$code9 == "parasit"){
+      
+      plot_ly(
+        data = temp1,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+      
+    } 
+    else if (input$code9 == "neoplasm") {
+      plot_ly(
+        data = temp2,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+      
+    }
+    else if (input$code9 == "endocrine") {
+      plot_ly(
+        data = temp3,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+      
+    }
+    
+    else if ( input$code9 == "blood" )
+      
+      plot_ly(
+        data = temp4,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+      layout(title= "Length of stay"
+             
+      )
+    
+    
+    
+    else if (input$code9 == "mental") {
+      plot_ly(
+        data = temp5,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+      
+    }
+    
+    else if (input$code9 == "nervous") {
+      plot_ly(
+        data = temp6,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+      
+    }
+    
+    else if (input$code9 == "circulatory") {
+      plot_ly(
+        data = temp7,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+      
+    }
+    else if (input$code9 == "respiratory") {
+      plot_ly(
+        data = temp8,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+    }
+    
+    else if (input$code9 == "digestive") {
+      plot_ly(
+        data = temp9,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+    }
+    
+    else if (input$code9 == "genitourinary") {
+      plot_ly(
+        data = temp10,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+    }
+    
+    else if (input$code9 == "pregnancy") {
+      plot_ly(
+        data = temp11,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+      
+    }
+    
+    else if (input$code9 == "skin") {
+      plot_ly(
+        data = temp12,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+      
+    }
+    
+    else if (input$code9 == "muscle") {
+      plot_ly(
+        data = temp13,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+    }
+    
+    else if (input$code9 == "anomalies") {
+      plot_ly(
+        data = temp14,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+    }
+    
+    else if (input$code9 == "perinatal") {
+      plot_ly(
+        data = temp15,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+    }
+    
+    else if (input$code9 == "signs") {
+      plot_ly(
+        data = temp16,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+    }
+    
+    else if (input$code9 == "poison") {
+      plot_ly(
+        data = temp17,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+      
+    }
+    
+    
+    else if (input$code9 == "v1") {
+      plot_ly(
+        data = temp18,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+    }
+    
+    else if (input$code9 == "v2") {
+      plot_ly(
+        data = temp19,
+        y = ~LOS,
+        type = "box"
+      ) %>%
+        layout(title= "Length of stay"
+               
+        )
+    }
+    
+    
     
     
   })
@@ -1247,9 +1482,10 @@ server <- (function(input, output) {
 
 shinyApp(ui, server)
 
-#TODO 13/6/2022
+#TODO 04/7/2022
 
-#CRIAR SUMMARY DE GRUPO DE DOENTES NO MENU DIAGNOSES + LISTA DE PACIENTES COM ESSA DOENÇA DONE
-#CRIAR SUBMENU DOENTES + item de cada paciente
-#corrigir legenda do grafico DONE
-#general info precisa de legenda!! DONE
+#ORDENAR POR SEQ NUMB 
+#CRIAR SEARCH BY PATIENT ID
+#STATS DE DOENÇAS COM NUMERO 1 / HISTOGRAMA COM CORES
+#DESCRICAO DOENçA long title
+#boxplot com len stay -> especific tab + grafico com varios para comparar
