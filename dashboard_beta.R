@@ -11,21 +11,21 @@ library(DT)
 library(ggplot2)
 
   # WINDOWS
-setwd("~/GitHub/MIMIC-III")
-ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
-ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
-PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
-dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
-DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
+# setwd("~/GitHub/MIMIC-III")
+# ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+# ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
+# PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+# dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
+# DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
 
 #LINUX
 
-# setwd("~/Documents/Github/MIMIC-III")
-# ADMISSIONS <- read_csv("~/Documents/Github/MIMIC-III/ADMISSIONS.csv")
-# ICUSTAYS <- read_csv("~/Documents/Github/MIMIC-III/ICUSTAYS.csv")
-# PATIENTS <- read_csv("~/Documents/Github/MIMIC-III/PATIENTS.csv")
-# dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
-# DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
+setwd("~/Documents/Github/MIMIC-III")
+ADMISSIONS <- read_csv("~/Documents/Github/MIMIC-III/ADMISSIONS.csv")
+ICUSTAYS <- read_csv("~/Documents/Github/MIMIC-III/ICUSTAYS.csv")
+PATIENTS <- read_csv("~/Documents/Github/MIMIC-III/PATIENTS.csv")
+dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
+DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
 
 colnames(dfmerge)[colnames(dfmerge) == 'SUBJECT_ID.x'] <- 'SUBJECT_ID'
 dfmerge <- dfmerge[-c(29)]
@@ -180,6 +180,9 @@ dfmerge2 <- dfmerge2[ -c(2,4,5,6,11,15,16,18,19,21,22,23,24,28,29,30) ]
 colnames(dfmerge2)[colnames(dfmerge2) == 'HADM_ID.x'] <- 'HADM_ID'
 
 
+
+
+
 temp1 <-filter(dfmerge2, ICD9_CODE <= 1398)
 temp2 <- filter(dfmerge2, ICD9_CODE >= 1400 , ICD9_CODE <= 2399)
 temp3 <- filter(dfmerge2, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
@@ -199,6 +202,13 @@ temp16 <- filter(dfmerge2, ICD9_CODE >= 7800 , ICD9_CODE <= 7999)
 temp17 <- filter(dfmerge2, ICD9_CODE >= 8000 , ICD9_CODE <= 9999)
 temp18<- DIAGNOSES_ICD  %>% filter(str_detect(ICD9_CODE, "^V"))
 temp19 <- DIAGNOSES_ICD  %>% filter(str_detect(ICD9_CODE, "^E"))
+
+temp18 <- merge(temp18,ICUSTAYS, by = "ROW_ID", all.x  =TRUE) #LEFT OUTER JOIN
+temp19 <- merge(temp19,ICUSTAYS, by = "ROW_ID", all.x  =TRUE) #LEFT OUTER JOIN
+
+
+
+
 
 
 
@@ -1486,6 +1496,6 @@ shinyApp(ui, server)
 
 #ORDENAR POR SEQ NUMB 
 #CRIAR SEARCH BY PATIENT ID
-#STATS DE DOENÇAS COM NUMERO 1 / HISTOGRAMA COM CORES
-#DESCRICAO DOENçA long title
+#STATS DE DOEN?AS COM NUMERO 1 / HISTOGRAMA COM CORES
+#DESCRICAO DOEN?A long title
 #boxplot com len stay -> especific tab + grafico com varios para comparar
