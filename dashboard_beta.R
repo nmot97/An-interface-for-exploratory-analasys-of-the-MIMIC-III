@@ -460,7 +460,10 @@ body <- dashboardBody(
               
               box(
                 verbatimTextOutput("summary2"),  
-              )
+              ),
+              box(
+                plotlyOutput("boxplotcompare")
+                )
               
             )
     ),
@@ -1483,9 +1486,160 @@ server <- (function(input, output) {
     
     
     })
-    
-   
   
+  output$boxplotcompare <- renderPlotly({
+    fig <- plot_ly(
+      data = temp1,
+      y = ~LOS,
+      type = "box",
+      name= "001-139"
+      
+      )
+    fig <- fig %>% add_trace(
+      data = temp2,
+      y = ~LOS,
+      type = "box",
+      name="140-239"
+      
+    )
+    
+    
+    fig <- fig %>% add_trace(
+      data = temp3,
+      y = ~LOS,
+      type = "box",
+      name="240-279"
+      
+    )
+    fig <- fig %>% add_trace(
+      data = temp4,
+      y = ~LOS,
+      type = "box",
+      name="280-289"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp5,
+      y = ~LOS,
+      type = "box",
+      name="290-319"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp6,
+      y = ~LOS,
+      type = "box",
+      name="320-389"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp7,
+      y = ~LOS,
+      type = "box",
+      name="390-459"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp8,
+      y = ~LOS,
+      type = "box",
+      name="460-519"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp9,
+      y = ~LOS,
+      type = "box",
+      name="520-579"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp10,
+      y = ~LOS,
+      type = "box",
+      name="580-629"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp11,
+      y = ~LOS,
+      type = "box",
+      name="630-679"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp12,
+      y = ~LOS,
+      type = "box",
+      name="680-709"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp13,
+      y = ~LOS,
+      type = "box",
+      name="710-739"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp14,
+      y = ~LOS,
+      type = "box",
+      name="740-759"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp15,
+      y = ~LOS,
+      type = "box",
+      name="760-779"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp16,
+      y = ~LOS,
+      type = "box",
+      name="780-799"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp17,
+      y = ~LOS,
+      type = "box",
+      name="800-999"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp18,
+      y = ~LOS,
+      type = "box",
+      name="V01-V89"
+      
+    )
+    
+    fig <- fig %>% add_trace(
+      data = temp19,
+      y = ~LOS,
+      type = "box",
+      name="E800-E999"
+      
+    )
+   
+  })
   
 
   })
