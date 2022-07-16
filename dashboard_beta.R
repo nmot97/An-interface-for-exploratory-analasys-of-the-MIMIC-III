@@ -423,14 +423,14 @@ body <- dashboardBody(
     tabItem(tabName = "diagnoses1",
             h3("General view of the ICD-9 Codes"),
             fluidRow(
-              column(  width = 14, 
+              column(  width = 12, 
                 box(
                   plotlyOutput("graficoICDS"),
-                  height = 10,
+                  # height = 10,
                 ),
                 box(
                   plotlyOutput("boxplotcompare"),
-                  height = 10,
+                  # height = 10,
                 ),
               ),
               
