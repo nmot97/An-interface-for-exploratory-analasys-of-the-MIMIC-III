@@ -11,21 +11,21 @@ library(DT)
 library(ggplot2)
 
   # WINDOWS
-# setwd("~/GitHub/MIMIC-III")
-# ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
-# ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
-# PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
-# dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
-# DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
+setwd("~/GitHub/MIMIC-III")
+ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
+ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
+PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
+dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
+DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
 
 #LINUX
 
-setwd("~/Documents/Github/MIMIC-III")
-ADMISSIONS <- read_csv("~/Documents/Github/MIMIC-III/ADMISSIONS.csv")
-ICUSTAYS <- read_csv("~/Documents/Github/MIMIC-III/ICUSTAYS.csv")
-PATIENTS <- read_csv("~/Documents/Github/MIMIC-III/PATIENTS.csv")
-dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
-DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
+# setwd("~/Documents/Github/MIMIC-III")
+# ADMISSIONS <- read_csv("~/Documents/Github/MIMIC-III/ADMISSIONS.csv")
+# ICUSTAYS <- read_csv("~/Documents/Github/MIMIC-III/ICUSTAYS.csv")
+# PATIENTS <- read_csv("~/Documents/Github/MIMIC-III/PATIENTS.csv")
+# dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
+# DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
 
 colnames(dfmerge)[colnames(dfmerge) == 'SUBJECT_ID.x'] <- 'SUBJECT_ID'
 dfmerge <- dfmerge[-c(29)]
@@ -423,11 +423,17 @@ body <- dashboardBody(
     tabItem(tabName = "diagnoses1",
             h3("General view of the ICD-9 Codes"),
             fluidRow(
-              
-              box(
-                plotlyOutput("graficoICDS")
+              column(  width = 14, 
+                box(
+                  plotlyOutput("graficoICDS"),
+                  height = 10,
+                ),
+                box(
+                  plotlyOutput("boxplotcompare"),
+                  height = 10,
+                ),
               ),
-            
+              
               box(
                 h3("Select ICD9 code to see a summary:"),
                 width = 3,
@@ -459,11 +465,9 @@ body <- dashboardBody(
               ),
               
               box(
-                verbatimTextOutput("summary2"),  
+                verbatimTextOutput("summary2"), width = 8,
               ),
-              box(
-                plotlyOutput("boxplotcompare")
-                )
+              
               
             )
     ),
@@ -764,7 +768,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp1,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "001-139"
       ) %>%
         layout(title= "Length of stay"
                
@@ -775,7 +780,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp2,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "140-239"
       ) %>%
         layout(title= "Length of stay"
                
@@ -786,7 +792,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp3,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "240-279"
       ) %>%
         layout(title= "Length of stay"
                
@@ -799,7 +806,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp4,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "280-289"
       ) %>%
       layout(title= "Length of stay"
              
@@ -811,7 +819,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp5,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "290-319"
       ) %>%
         layout(title= "Length of stay"
                
@@ -823,7 +832,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp6,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "320-389"
       ) %>%
         layout(title= "Length of stay"
                
@@ -835,7 +845,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp7,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "390-459"
       ) %>%
         layout(title= "Length of stay"
                
@@ -846,7 +857,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp8,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "460-519"
       ) %>%
         layout(title= "Length of stay"
                
@@ -857,7 +869,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp9,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "520-579"
       ) %>%
         layout(title= "Length of stay"
                
@@ -868,7 +881,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp10,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "580-629"
       ) %>%
         layout(title= "Length of stay"
                
@@ -879,7 +893,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp11,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "630-679"
       ) %>%
         layout(title= "Length of stay"
                
@@ -891,7 +906,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp12,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "680-709"
       ) %>%
         layout(title= "Length of stay"
                
@@ -903,7 +919,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp13,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "710-739"
       ) %>%
         layout(title= "Length of stay"
                
@@ -914,7 +931,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp14,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "740-759"
       ) %>%
         layout(title= "Length of stay"
                
@@ -925,7 +943,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp15,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "760-779"
       ) %>%
         layout(title= "Length of stay"
                
@@ -936,7 +955,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp16,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "780-799"
       ) %>%
         layout(title= "Length of stay"
                
@@ -947,7 +967,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp17,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "800-999"
       ) %>%
         layout(title= "Length of stay"
                
@@ -960,7 +981,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp18,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "V01-V89"
       ) %>%
         layout(title= "Length of stay"
                
@@ -971,7 +993,8 @@ server <- (function(input, output) {
       plot_ly(
         data = temp19,
         y = ~LOS,
-        type = "box"
+        type = "box",
+        name = "E800-E999"
       ) %>%
         layout(title= "Length of stay"
                
