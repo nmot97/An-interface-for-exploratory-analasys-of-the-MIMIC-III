@@ -165,13 +165,29 @@ ICD9CODE <- c("0-139", "140-239", "240-279", "280-289", "290-319", "320-389",
           "390-459", "460-519", "520-579","580-629","630-679","680-709","710-739",
           "740-759","760-779", "780-799", "800-999","V01-V091","E000-E999", "NA"
           )
+a <- c("0-139", "140-239", "240-279", "280-289", "290-319", "320-389",
+              "390-459", "460-519", "520-579","580-629","630-679","680-709","710-739",
+              "740-759","760-779", "780-799", "800-999","V01-V091","E000-E999 .", "NA "
+          )
+
+
 Frequency <- c(nrow(infections139), nrow(neoplasms239), nrow(endocrine279), nrow(blood289), nrow(mental319),
         nrow(nervous389), nrow(circulatory459), nrow(respiratory519), nrow(digestive579), nrow(genitourinary629),
         nrow(pregnancy679), nrow(skin709), nrow(muscle739), nrow(congenital759), nrow(perinatal779), nrow(symptoms799),
         nrow(injury999), nrow(v), nrow(e), sum(is.na(DIAGNOSES_ICD$ICD9_CODE))
         )
 
+Frequency2 <- c(nrow(infections139_2), nrow(neoplasms239_2), nrow(endocrine279_2), nrow(blood289_2), nrow(mental319_2),
+               nrow(nervous389_2), nrow(circulatory459_2), nrow(respiratory519_2), nrow(digestive579_2), nrow(genitourinary629_2),
+               nrow(pregnancy679_2), nrow(skin709_2), nrow(muscle739_2), nrow(congenital759_2), nrow(perinatal779_2), nrow(symptoms799_2),
+               nrow(injury999_2), nrow(v_2), nrow(e_2), sum(is.na(firstseq_num$ICD9_CODE))
+        )
+
+
+
 diagnosesPlot <- data.frame(ICD9CODE, Frequency)
+diagnosesPlot2 <- data.frame(a, Frequency2)
+
 
 # print (df)
 
@@ -206,6 +222,27 @@ temp19 <- DIAGNOSES_ICD  %>% filter(str_detect(ICD9_CODE, "^E"))
 temp18 <- merge(temp18,ICUSTAYS, by = "ROW_ID", all.x  =TRUE) #LEFT OUTER JOIN
 temp19 <- merge(temp19,ICUSTAYS, by = "ROW_ID", all.x  =TRUE) #LEFT OUTER JOIN
 
+firstseq_num <- filter(DIAGNOSES_ICD, SEQ_NUM == "1")
+
+infections139_2 <-filter(firstseq_num, ICD9_CODE <= 1398)
+neoplasms239_2 <- filter(firstseq_num, ICD9_CODE >= 1400 , ICD9_CODE <= 2399)
+endocrine279_2 <- filter(firstseq_num, ICD9_CODE >= 2400 , ICD9_CODE <= 2799)
+blood289_2 <- filter(firstseq_num, ICD9_CODE >= 2800 , ICD9_CODE <= 2899)
+mental319_2 <- filter(firstseq_num, ICD9_CODE >= 2900 , ICD9_CODE <= 319)
+nervous389_2 <- filter(firstseq_num, ICD9_CODE >= 3200 , ICD9_CODE <= 3899)
+circulatory459_2 <-filter(firstseq_num, ICD9_CODE >= 3900 , ICD9_CODE <= 4599)
+respiratory519_2 <-filter(firstseq_num, ICD9_CODE >= 460 , ICD9_CODE <= 5199)
+digestive579_2 <-filter(firstseq_num, ICD9_CODE >= 5200 , ICD9_CODE <= 5799)
+genitourinary629_2 <-filter(firstseq_num, ICD9_CODE >= 5800 , ICD9_CODE <= 6299)
+pregnancy679_2 <- filter(firstseq_num, ICD9_CODE >= 6300 , ICD9_CODE <= 67914)
+skin709_2 <- filter(firstseq_num, ICD9_CODE >= 6800 , ICD9_CODE <= 7099)
+muscle739_2 <- filter(firstseq_num, ICD9_CODE >= 7100 , ICD9_CODE <= 7399)
+congenital759_2 <- filter(firstseq_num, ICD9_CODE >= 7400 , ICD9_CODE <= 7599)
+perinatal779_2 <- filter(firstseq_num, ICD9_CODE >= 7600 , ICD9_CODE <= 7799)
+symptoms799_2 <- filter(firstseq_num, ICD9_CODE >= 7800 , ICD9_CODE <= 7999)
+injury999_2 <- filter(firstseq_num, ICD9_CODE >= 8000 , ICD9_CODE <= 9999)
+v_2 <- firstseq_num  %>% filter(str_detect(ICD9_CODE, "^V"))
+e_2 <- firstseq_num %>% filter(str_detect(ICD9_CODE, "^E"))
 
 
 
@@ -236,7 +273,9 @@ sidebar <- dashboardSidebar(
              menuSubItem("General info",
                          tabName = "diagnoses1"),
              menuSubItem("Especific ICD9 Code",
-                         tabName = "diagnoses2")
+                         tabName = "diagnoses2"),
+             menuSubItem("First Diagnoses",
+                         tabName = "diagnoses3")
              )
   )
 )
@@ -516,6 +555,17 @@ body <- dashboardBody(
                 plotlyOutput("boxplot")
               )
               
+            )
+    ),
+    
+    tabItem(tabName = "diagnoses3",
+            h3("First Diagnoses  "),
+            fluidRow(
+                 box(
+                      plotlyOutput("graficoICDS2"),
+                      
+                  ),
+                  
             )
     ),
     
@@ -1662,6 +1712,24 @@ server <- (function(input, output) {
       
     )
    
+  })
+  
+  output$graficoICDS2 <-  renderPlotly({
+    plot_ly(
+      data = diagnosesPlot2,
+      x = ~ICD9CODE,
+      y = ~Frequency2,
+      type = "bar",
+      text = ~Frequency2,
+      textposition = "auto",
+      hoverinfo = "text",
+      hovertext = paste("IC9-Code:", diagnosesPlot2$ICD9CODE)
+    ) %>%
+      layout(title= "Frequency of each ICD9 code"
+             
+      )
+    
+    
   })
   
 
