@@ -165,10 +165,7 @@ ICD9CODE <- c("0-139", "140-239", "240-279", "280-289", "290-319", "320-389",
           "390-459", "460-519", "520-579","580-629","630-679","680-709","710-739",
           "740-759","760-779", "780-799", "800-999","V01-V091","E000-E999", "NA"
           )
-a <- c("0-139", "140-239", "240-279", "280-289", "290-319", "320-389",
-              "390-459", "460-519", "520-579","580-629","630-679","680-709","710-739",
-              "740-759","760-779", "780-799", "800-999","V01-V091","E000-E999 .", "NA "
-          )
+
 
 
 Frequency <- c(nrow(infections139), nrow(neoplasms239), nrow(endocrine279), nrow(blood289), nrow(mental319),
@@ -176,6 +173,10 @@ Frequency <- c(nrow(infections139), nrow(neoplasms239), nrow(endocrine279), nrow
         nrow(pregnancy679), nrow(skin709), nrow(muscle739), nrow(congenital759), nrow(perinatal779), nrow(symptoms799),
         nrow(injury999), nrow(v), nrow(e), sum(is.na(DIAGNOSES_ICD$ICD9_CODE))
         )
+a <- c("0-139", "140-239", "240-279", "280-289", "290-319", "320-389",
+       "390-459", "460-519", "520-579","580-629","630-679","680-709","710-739",
+       "740-759","760-779", "780-799", "800-999","V01-V091","E000-E999", "NA "
+)
 
 Frequency2 <- c(nrow(infections139_2), nrow(neoplasms239_2), nrow(endocrine279_2), nrow(blood289_2), nrow(mental319_2),
                nrow(nervous389_2), nrow(circulatory459_2), nrow(respiratory519_2), nrow(digestive579_2), nrow(genitourinary629_2),
@@ -796,7 +797,7 @@ server <- (function(input, output) {
     plot_ly(
       data = diagnosesPlot,
       x = ~ICD9CODE,
-      y = ~Frequency,
+      y = ~Frequency2,
       type = "bar",
       text = ~Frequency,
       textposition = "auto",
@@ -1718,12 +1719,12 @@ server <- (function(input, output) {
     plot_ly(
       data = diagnosesPlot2,
       x = ~ICD9CODE,
-      y = ~Frequency2,
+      y = ~Frequency,
       type = "bar",
       text = ~Frequency2,
       textposition = "auto",
       hoverinfo = "text",
-      hovertext = paste("IC9-Code:", diagnosesPlot2$ICD9CODE)
+      hovertext = paste("IC9-Code:", diagnosesPlot2$a)
     ) %>%
       layout(title= "Frequency of each ICD9 code"
              
