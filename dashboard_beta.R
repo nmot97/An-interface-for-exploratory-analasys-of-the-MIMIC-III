@@ -570,32 +570,18 @@ body <- dashboardBody(
                  box(
                    h3("Description of the ICD-9 codes:"),
                    br(),
-                   h4("
                    
-                      Infectious and parasitic diseases (001-139) 
-                      Neoplasms (140-239) <br>
-                      Endocrine, nutritional and metabolic diseases, and immunity disorders (240-279)<br>
-                      Diseases of the blood and blood-forming organs (280-289)<br>
-                      Mental disorders (290-319)<br>
-                      Diseases of the nervous system and sense organs (320-389) <br>
-                      Diseases of the circulatory system (390-459)<br>
-                      Diseases of the respiratory system (460-519)<br>
-                      Diseases of the digestive system (520-579)<br>
-                      Diseases of the genitourinary system (580-629)<br>
-                      Complications of pregnancy, childbirth, and the puerperium (630-679)<br>
-                      Diseases of the skin and subcutaneous tissue (680-709)
-                      Diseases of the musculoskeletal system and connective tissue (710-739)
-                      Congenital anomalies (740-759)
-                      Certain conditions originating in the perinatal period (760-779)
-                      Symptoms, signs, and ill-defined conditions (780-799)
-                      Injury and poisoning (800-999)
-                      Supplementary classification of factors influencing health status and contact with health services (v01-v89)
-                      Supplementary classification of external causes of injury and poisoning (e800-e999)
-                      
+                   HTML("<p>&nbsp;Infectious and parasitic diseases <strong>(001-139)</strong><br>Neoplasms <strong>(140-239)&nbsp;</strong><br>Endocrine, nutritional and metabolic diseases, and immunity disorders <strong>(240-279)</strong><br>Diseases of the blood and blood-forming organs <strong>(280-289)</strong></p>
+
+<p>Diseases of the nervous system and sense organs <strong>(320-389)</strong><br>Diseases of the circulatory system <strong>(390-459)</strong><br>Diseases of the respiratory system <strong>(460-519)</strong><br>Diseases of the genitourinary system<strong>&nbsp;(580-629)</strong><br>Complications of pregnancy, childbirth, and the puerperium <strong>(630-679)</strong><br> Diseases of the skin and subcutaneous tissue <strong>(680-709)</strong><br> Diseases of the musculoskeletal system and connective tissue<strong>&nbsp;(710-739)</strong><br>Congenital anomalies <strong>
+  
+  (740-759)</strong><br> Certain conditions originating in the perinatal period <strong>(760-779)</strong><br>Symptoms, signs, and ill-defined conditions <strong>(780-799)</strong><br>Injury and poisoning <strong>(800-999)</strong><br>Supplementary classification of factors influencing health status and contact with health services<strong>&nbsp;(V01-V89)</strong><br> Supplementary classification of external causes of injury and poisoning <strong>(E800-E999)</strong></p>")
+                     
+
                    
                       
                       
-                      ")
+                      
                    
                  ),
                   
