@@ -566,6 +566,38 @@ body <- dashboardBody(
                       plotlyOutput("graficoICDS2"),
                       
                   ),
+                 
+                 box(
+                   h3("Description of the ICD-9 codes:"),
+                   br(),
+                   h4("
+                   
+                      Infectious and parasitic diseases (001-139) 
+                      Neoplasms (140-239) <br>
+                      Endocrine, nutritional and metabolic diseases, and immunity disorders (240-279)<br>
+                      Diseases of the blood and blood-forming organs (280-289)<br>
+                      Mental disorders (290-319)<br>
+                      Diseases of the nervous system and sense organs (320-389) <br>
+                      Diseases of the circulatory system (390-459)<br>
+                      Diseases of the respiratory system (460-519)<br>
+                      Diseases of the digestive system (520-579)<br>
+                      Diseases of the genitourinary system (580-629)<br>
+                      Complications of pregnancy, childbirth, and the puerperium (630-679)<br>
+                      Diseases of the skin and subcutaneous tissue (680-709)
+                      Diseases of the musculoskeletal system and connective tissue (710-739)
+                      Congenital anomalies (740-759)
+                      Certain conditions originating in the perinatal period (760-779)
+                      Symptoms, signs, and ill-defined conditions (780-799)
+                      Injury and poisoning (800-999)
+                      Supplementary classification of factors influencing health status and contact with health services (v01-v89)
+                      Supplementary classification of external causes of injury and poisoning (e800-e999)
+                      
+                   
+                      
+                      
+                      ")
+                   
+                 ),
                   
             )
     ),
@@ -1719,7 +1751,7 @@ server <- (function(input, output) {
     plot_ly(
       data = diagnosesPlot2,
       x = ~ICD9CODE,
-      y = ~Frequency,
+      y = ~Frequency2,
       type = "bar",
       text = ~Frequency2,
       textposition = "auto",
@@ -1742,6 +1774,6 @@ shinyApp(ui, server)
 
 #ORDENAR POR SEQ NUMB 
 #CRIAR SEARCH BY PATIENT ID
-#STATS DE DOEN?AS COM NUMERO 1 / HISTOGRAMA COM CORES
+#STATS DE DOEN?AS COM NUMERO 1 / HISTOGRAMA COM CORES DONE
 #DESCRICAO DOEN?A long title
 #boxplot com len stay -> especific tab + grafico com varios para comparar
