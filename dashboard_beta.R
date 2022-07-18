@@ -260,8 +260,10 @@ sidebar <- dashboardSidebar(
              badgeLabel = "beta", badgeColor = "green"),
     menuItem("Patients", tabName = "patientss", icon = icon("hospital-user"),
              startExpanded = FALSE,
-             menuSubItem(" General Patient Search",
+             menuSubItem(" General Patient Info",
                          tabName = "patients"),
+             menuSubItem(" Patient Search by ID",
+                         tabName = "patients3"),
              menuSubItem("Especific Patient Search",
                          tabName = "patients2")
              
@@ -426,6 +428,45 @@ body <- dashboardBody(
   
             
     ), #fimpatients
+    
+    tabItem(tabName = "patients3",
+            h4("Search by patient ID"),
+            
+            
+            sidebarLayout(
+              
+              
+              sidebarPanel(
+                #selectInput("patid", "Patient ID: ", choices = PATIENTS$SUBJECT_ID, selected = NULL ),
+                #actionButton('buttonid2','Select'),
+                selectizeInput("patid", "Choose or type patient ID:", choices = NULL)
+              ),
+               
+                
+              
+              mainPanel(
+                
+                DT::dataTableOutput("patientid"),
+                #tableOutput("patient_id"),
+                width = 9,
+                
+               
+                
+                
+                
+                
+              ),
+              
+              
+              
+              
+            ), 
+            
+            
+      ),
+          
+            
+    
     
     
     
@@ -618,7 +659,7 @@ body <- dashboardBody(
 ui <- dashboardPage(header, sidebar, body)
 
 # ********************************************* SERVER *****************************************************
-server <- (function(input, output) {
+server <- (function(input, output,session) {
   
   output$grafico <- renderPlot({
     if( is.factor(dfmerge[,input$inState]) || is.character(dfmerge[,input$inState])) {
@@ -815,7 +856,7 @@ server <- (function(input, output) {
     plot_ly(
       data = diagnosesPlot,
       x = ~ICD9CODE,
-      y = ~Frequency2,
+      y = ~Frequency,
       type = "bar",
       text = ~Frequency,
       textposition = "auto",
@@ -1751,15 +1792,30 @@ server <- (function(input, output) {
     
   })
   
-
+  updateSelectizeInput(session, "patid", choices = PATIENTS$SUBJECT_ID, server = T)
+  
+  
+  # observeEvent(input$buttonid,
+  #              {
+  #                updateSelectizeInput(session, "listid", selected = "Item 1234")
+  #              })
+  
+  # output$patient_id <- renderTable({
+  #   filter( PATIENTS, SUBJECT_ID == "input$patid")
+  # })
+  
+  output$patientid <- DT::renderDataTable({
+    
+    
+    DT::datatable( filter( PATIENTS, SUBJECT_ID == input$patid) )
+  })
+  
+  
   })
 
 shinyApp(ui, server)
 
-#TODO 04/7/2022
+#TODO 18/7/2022
 
-#ORDENAR POR SEQ NUMB 
-#CRIAR SEARCH BY PATIENT ID
-#STATS DE DOEN?AS COM NUMERO 1 / HISTOGRAMA COM CORES DONE
-#DESCRICAO DOEN?A long title
-#boxplot com len stay -> especific tab + grafico com varios para comparar
+#COMPARAR PERCURSO DO DOENTE PARA UMA DOENÇA ( onde tenha muitos outliers). Um outlier vs poucos dias. 1 aleatorio. 
+# + grafico caregivers . Mostrar itens do paciente internado + numero de caregivers + exames? 
