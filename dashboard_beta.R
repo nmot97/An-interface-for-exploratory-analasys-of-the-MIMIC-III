@@ -246,7 +246,7 @@ v_2 <- firstseq_num  %>% filter(str_detect(ICD9_CODE, "^V"))
 e_2 <- firstseq_num %>% filter(str_detect(ICD9_CODE, "^E"))
 
 
-
+x1 <- count(filter(PATIENTS, EXPIRE_FLAG == "1"))/46520
 
 
 
@@ -303,7 +303,7 @@ body <- dashboardBody(
                 HTML('<b> ICU length of stay, average days:</b>'), print( round(mean(ICUSTAYS$LOS, na.rm =  TRUE),3) ), HTML('</br>'),
                 #HTML('<b> Hospital length of stay, average days:</b> 6.9 <br>'),
                 #HTML('<b> ICU Mortality, %:</b> 8.5 <br>'),
-                HTML('<b> Hospital mortality,% :</b>'), print(round(n_deaths/46520,3)), HTML('</br>'),
+                HTML('<b> Hospital mortality,% :</b>'), print(round(x1,3), HTML('</br>'),
               ),
               
               box(
@@ -439,6 +439,7 @@ body <- dashboardBody(
               sidebarPanel(
                 #selectInput("patid", "Patient ID: ", choices = PATIENTS$SUBJECT_ID, selected = NULL ),
                 #actionButton('buttonid2','Select'),
+                width = 2,
                 selectizeInput("patid", "Choose or type patient ID:", choices = NULL)
               ),
                
@@ -1618,7 +1619,7 @@ server <- (function(input, output,session) {
     }
     
     
-    })
+  })
   
   output$boxplotcompare <- renderPlotly({
     fig <- plot_ly(
@@ -1792,7 +1793,7 @@ server <- (function(input, output,session) {
     
   })
   
-  updateSelectizeInput(session, "patid", choices = PATIENTS$SUBJECT_ID, server = T)
+  updateSelectizeInput(session, "patid", choices = PATIENTS$SUBJECT_ID, server = T, selected = "1")
   
   
   # observeEvent(input$buttonid,
