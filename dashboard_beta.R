@@ -720,13 +720,13 @@ server <- (function(input, output,session) {
   )
   
   
-  dfmerge2 <- subset(dfmerge, select = -c(HOSPITAL_EXPIRE_FLAG,HAS_CHARTEVENTS_DATA, EXPIRE_FLAG))
+  dfmerge3 <- subset(dfmerge, select = -c(HOSPITAL_EXPIRE_FLAG,HAS_CHARTEVENTS_DATA, EXPIRE_FLAG))
   
   filtered_gender <- reactive({
     if(input$in_gender == "ALL"){
-      dfmerge2
+      dfmerge3
     } else {
-      dfmerge2 %>% 
+      dfmerge3 %>% 
         filter(GENDER == input$in_gender)
     }
   })
