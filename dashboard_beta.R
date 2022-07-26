@@ -448,7 +448,7 @@ body <- dashboardBody(
               sidebarPanel(
                 #selectInput("patid", "Patient ID: ", choices = PATIENTS$SUBJECT_ID, selected = NULL ),
                 #actionButton('buttonid2','Select'),
-                #width = 2,
+                width = 2,
                 selectizeInput("patid", "Choose or type patient ID:", choices = NULL)
               ),
               
@@ -1817,7 +1817,7 @@ server <- (function(input, output,session) {
   output$patientid <- DT::renderDataTable({
     
     
-    DT::datatable( filter( dfmerge_tfirst_patientes, SUBJECT_ID == input$patid) )
+    DT::datatable( filter( dfmerge_tfirst_patientes, SUBJECT_ID == input$patid), options = list(scrollX = TRUE) )
   })
   
   
