@@ -10,7 +10,7 @@ library(tibble)
 library(DT)
 library(ggplot2)
 
-  # WINDOWS
+# WINDOWS
 setwd("~/GitHub/MIMIC-III")
 ADMISSIONS <- read.csv("~/GitHub/MIMIC-III/ADMISSIONS.csv")
 ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
@@ -162,27 +162,27 @@ symptoms799 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 7800 , ICD9_CODE <= 7999)
 injury999 <- filter(DIAGNOSES_ICD, ICD9_CODE >= 8000 , ICD9_CODE <= 9999)
 
 ICD9CODE <- c("0-139", "140-239", "240-279", "280-289", "290-319", "320-389",
-          "390-459", "460-519", "520-579","580-629","630-679","680-709","710-739",
-          "740-759","760-779", "780-799", "800-999","V01-V091","E000-E999", "NA"
-          )
+              "390-459", "460-519", "520-579","580-629","630-679","680-709","710-739",
+              "740-759","760-779", "780-799", "800-999","V01-V091","E000-E999", "NA"
+)
 
 
 
 Frequency <- c(nrow(infections139), nrow(neoplasms239), nrow(endocrine279), nrow(blood289), nrow(mental319),
-        nrow(nervous389), nrow(circulatory459), nrow(respiratory519), nrow(digestive579), nrow(genitourinary629),
-        nrow(pregnancy679), nrow(skin709), nrow(muscle739), nrow(congenital759), nrow(perinatal779), nrow(symptoms799),
-        nrow(injury999), nrow(v), nrow(e), sum(is.na(DIAGNOSES_ICD$ICD9_CODE))
-        )
+               nrow(nervous389), nrow(circulatory459), nrow(respiratory519), nrow(digestive579), nrow(genitourinary629),
+               nrow(pregnancy679), nrow(skin709), nrow(muscle739), nrow(congenital759), nrow(perinatal779), nrow(symptoms799),
+               nrow(injury999), nrow(v), nrow(e), sum(is.na(DIAGNOSES_ICD$ICD9_CODE))
+)
 a <- c("0-139", "140-239", "240-279", "280-289", "290-319", "320-389",
        "390-459", "460-519", "520-579","580-629","630-679","680-709","710-739",
        "740-759","760-779", "780-799", "800-999","V01-V091","E000-E999", "NA "
 )
 
 Frequency2 <- c(nrow(infections139_2), nrow(neoplasms239_2), nrow(endocrine279_2), nrow(blood289_2), nrow(mental319_2),
-               nrow(nervous389_2), nrow(circulatory459_2), nrow(respiratory519_2), nrow(digestive579_2), nrow(genitourinary629_2),
-               nrow(pregnancy679_2), nrow(skin709_2), nrow(muscle739_2), nrow(congenital759_2), nrow(perinatal779_2), nrow(symptoms799_2),
-               nrow(injury999_2), nrow(v_2), nrow(e_2), sum(is.na(firstseq_num$ICD9_CODE))
-        )
+                nrow(nervous389_2), nrow(circulatory459_2), nrow(respiratory519_2), nrow(digestive579_2), nrow(genitourinary629_2),
+                nrow(pregnancy679_2), nrow(skin709_2), nrow(muscle739_2), nrow(congenital759_2), nrow(perinatal779_2), nrow(symptoms799_2),
+                nrow(injury999_2), nrow(v_2), nrow(e_2), sum(is.na(firstseq_num$ICD9_CODE))
+)
 
 
 
@@ -279,7 +279,7 @@ sidebar <- dashboardSidebar(
                          tabName = "diagnoses2"),
              menuSubItem("First Diagnoses",
                          tabName = "diagnoses3")
-             )
+    )
   )
 )
 
@@ -303,7 +303,7 @@ body <- dashboardBody(
                 HTML('<b> ICU length of stay, average days:</b>'), print( round(mean(ICUSTAYS$LOS, na.rm =  TRUE),3) ), HTML('</br>'),
                 #HTML('<b> Hospital length of stay, average days:</b> 6.9 <br>'),
                 #HTML('<b> ICU Mortality, %:</b> 8.5 <br>'),
-                HTML('<b> Hospital mortality,% :</b>'), print(round(x1,3), HTML('</br>'),
+                HTML('<b> Hospital mortality,% :</b>'), print(round(x1,3)), HTML('</br>'),
               ),
               
               box(
@@ -313,7 +313,7 @@ body <- dashboardBody(
               ),
               
               box(
-               
+                
                 status = "primary",
                 plotlyOutput("age_graph")
               )
@@ -425,7 +425,7 @@ body <- dashboardBody(
               
             ), 
             
-  
+            
             
     ), #fimpatients
     
@@ -442,8 +442,8 @@ body <- dashboardBody(
                 width = 2,
                 selectizeInput("patid", "Choose or type patient ID:", choices = NULL)
               ),
-               
-                
+              
+              
               
               mainPanel(
                 
@@ -451,7 +451,7 @@ body <- dashboardBody(
                 #tableOutput("patient_id"),
                 width = 9,
                 
-               
+                
                 
                 
                 
@@ -464,9 +464,9 @@ body <- dashboardBody(
             ), 
             
             
-      ),
-          
-            
+    ),
+    
+    
     
     
     
@@ -497,7 +497,7 @@ body <- dashboardBody(
               
             )
             
-          
+            
             
             
     ), #fim admissions
@@ -506,14 +506,14 @@ body <- dashboardBody(
             h3("General view of the ICD-9 Codes"),
             fluidRow(
               column(  width = 12, 
-                box(
-                  plotlyOutput("graficoICDS"),
-                  # height = 10,
-                ),
-                box(
-                  plotlyOutput("boxplotcompare"),
-                  # height = 10,
-                ),
+                       box(
+                         plotlyOutput("graficoICDS"),
+                         # height = 10,
+                       ),
+                       box(
+                         plotlyOutput("boxplotcompare"),
+                         # height = 10,
+                       ),
               ),
               
               box(
@@ -540,7 +540,7 @@ body <- dashboardBody(
                   "INJURY AND POISONING (800-999)" ="poison",
                   "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)" ="v1",
                   "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)" = "v2"
-
+                  
                   
                 ) 
                 )
@@ -580,7 +580,7 @@ body <- dashboardBody(
                   "INJURY AND POISONING (800-999)" ="poison",
                   "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)" ="v1",
                   "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)" = "v2"
-                
+                  
                   
                 ) 
                 )
@@ -604,29 +604,29 @@ body <- dashboardBody(
     tabItem(tabName = "diagnoses3",
             h3("First Diagnoses  "),
             fluidRow(
-                 box(
-                      plotlyOutput("graficoICDS2"),
-                      
-                  ),
-                 
-                 box(
-                   h3("Description of the ICD-9 codes:"),
-                   br(),
-                   
-                   HTML("<p>&nbsp;Infectious and parasitic diseases <strong>(001-139)</strong><br>Neoplasms <strong>(140-239)&nbsp;</strong><br>Endocrine, nutritional and metabolic diseases, and immunity disorders <strong>(240-279)</strong><br>Diseases of the blood and blood-forming organs <strong>(280-289)</strong></p>
+              box(
+                plotlyOutput("graficoICDS2"),
+                
+              ),
+              
+              box(
+                h3("Description of the ICD-9 codes:"),
+                br(),
+                
+                HTML("<p>&nbsp;Infectious and parasitic diseases <strong>(001-139)</strong><br>Neoplasms <strong>(140-239)&nbsp;</strong><br>Endocrine, nutritional and metabolic diseases, and immunity disorders <strong>(240-279)</strong><br>Diseases of the blood and blood-forming organs <strong>(280-289)</strong></p>
 
 <p>Diseases of the nervous system and sense organs <strong>(320-389)</strong><br>Diseases of the circulatory system <strong>(390-459)</strong><br>Diseases of the respiratory system <strong>(460-519)</strong><br>Diseases of the genitourinary system<strong>&nbsp;(580-629)</strong><br>Complications of pregnancy, childbirth, and the puerperium <strong>(630-679)</strong><br> Diseases of the skin and subcutaneous tissue <strong>(680-709)</strong><br> Diseases of the musculoskeletal system and connective tissue<strong>&nbsp;(710-739)</strong><br>Congenital anomalies <strong>
   
   (740-759)</strong><br> Certain conditions originating in the perinatal period <strong>(760-779)</strong><br>Symptoms, signs, and ill-defined conditions <strong>(780-799)</strong><br>Injury and poisoning <strong>(800-999)</strong><br>Supplementary classification of factors influencing health status and contact with health services<strong>&nbsp;(V01-V89)</strong><br> Supplementary classification of external causes of injury and poisoning <strong>(E800-E999)</strong></p>")
-                     
-
-                   
-                      
-                      
-                      
-                   
-                 ),
-                  
+                
+                
+                
+                
+                
+                
+                
+              ),
+              
             )
     ),
     
@@ -635,7 +635,7 @@ body <- dashboardBody(
     
     
     
-            
+    
     
     tabItem(tabName = "search",
             h5("Here you can make different kind of searches"),
@@ -700,7 +700,7 @@ server <- (function(input, output,session) {
       )
     
     
-   })
+  })
   
   output$age_graph <- renderPlotly({
     plot_ly(
@@ -716,7 +716,7 @@ server <- (function(input, output,session) {
   
   output$diseases <- renderDataTable(
     admission_temp
-   
+    
   )
   
   
@@ -1132,7 +1132,7 @@ server <- (function(input, output,session) {
         layout(title= "Frequency of each ICD9 ",
                xaxis= list(title = "ICD Code" ,
                            categoryorder = "total descending")
-              )
+        )
     } 
     else if (input$code9 == "neoplasm") {
       counts <- as.data.frame(table(neoplasms239$ICD9_CODE))
@@ -1148,7 +1148,7 @@ server <- (function(input, output,session) {
                xaxis= list(title = "ICD Code" ,
                            categoryorder = "total descending")
         )
-
+      
     }
     else if (input$code9 == "parasit") {
       counts <- as.data.frame(table(infections139$ICD9_CODE))
@@ -1439,14 +1439,14 @@ server <- (function(input, output,session) {
       
     }
     
-   })
- 
+  })
+  
   output$summary2 <- renderPrint({
     
     if (input$code92 == "parasit"){
-    
-        summary(temp1)
-  
+      
+      summary(temp1)
+      
     } 
     else if (input$code92 == "neoplasm") {
       summary(temp2)
@@ -1460,8 +1460,8 @@ server <- (function(input, output,session) {
     else if ( input$code92 == "blood" )
       
       summary(temp4)
-   
-   
+    
+    
     
     else if (input$code92 == "mental") {
       summary(temp5)
@@ -1531,7 +1531,7 @@ server <- (function(input, output,session) {
     
   })
   
-
+  
   output$doentes <- DT::renderDataTable({
     
     if ( input$code93 == "parasit")
@@ -1628,7 +1628,7 @@ server <- (function(input, output,session) {
       type = "box",
       name= "001-139"
       
-      )
+    )
     fig <- fig %>% add_trace(
       data = temp2,
       y = ~LOS,
@@ -1772,7 +1772,7 @@ server <- (function(input, output,session) {
       name="E800-E999"
       
     )
-   
+    
   })
   
   output$graficoICDS2 <-  renderPlotly({
@@ -1793,7 +1793,7 @@ server <- (function(input, output,session) {
     
   })
   
-  updateSelectizeInput(session, "patid", choices = PATIENTS$SUBJECT_ID, server = T, selected = "1")
+  updateSelectizeInput(session, "patid", choices = PATIENTS$SUBJECT_ID, server = T)
   
   
   # observeEvent(input$buttonid,
@@ -1812,11 +1812,11 @@ server <- (function(input, output,session) {
   })
   
   
-  })
+})
 
 shinyApp(ui, server)
 
 #TODO 18/7/2022
 
-#COMPARAR PERCURSO DO DOENTE PARA UMA DOENÇA ( onde tenha muitos outliers). Um outlier vs poucos dias. 1 aleatorio. 
+#COMPARAR PERCURSO DO DOENTE PARA UMA DOEN???A ( onde tenha muitos outliers). Um outlier vs poucos dias. 1 aleatorio. 
 # + grafico caregivers . Mostrar itens do paciente internado + numero de caregivers + exames? 
