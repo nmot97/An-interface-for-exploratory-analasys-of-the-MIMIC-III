@@ -248,6 +248,15 @@ e_2 <- firstseq_num %>% filter(str_detect(ICD9_CODE, "^E"))
 
 x1 <- count(filter(PATIENTS, EXPIRE_FLAG == "1"))/46520
 
+t.first <- ADMISSIONS[match(unique(ADMISSIONS$SUBJECT_ID), ADMISSIONS$SUBJECT_ID),]
+
+dfmerge_tfirst_patientes <- merge(PATIENTS, t.first, by = "SUBJECT_ID")
+
+dfmerge_tfirst_patientes <- subset(dfmerge_tfirst_patientes, select = -c(DOD_SSN, DOD_HOSP,ROW_ID.x ,ROW_ID.y, EXPIRE_FLAG, DEATHTIME, HOSPITAL_EXPIRE_FLAG, HAS_CHARTEVENTS_DATA))
+
+
+
+
 
 
 header <- dashboardHeader(title="MIMIC-III"
@@ -439,7 +448,7 @@ body <- dashboardBody(
               sidebarPanel(
                 #selectInput("patid", "Patient ID: ", choices = PATIENTS$SUBJECT_ID, selected = NULL ),
                 #actionButton('buttonid2','Select'),
-                width = 2,
+                #width = 2,
                 selectizeInput("patid", "Choose or type patient ID:", choices = NULL)
               ),
               
@@ -1808,7 +1817,7 @@ server <- (function(input, output,session) {
   output$patientid <- DT::renderDataTable({
     
     
-    DT::datatable( filter( PATIENTS, SUBJECT_ID == input$patid) )
+    DT::datatable( filter( dfmerge_tfirst_patientes, SUBJECT_ID == input$patid) )
   })
   
   
