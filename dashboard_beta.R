@@ -126,6 +126,9 @@ xpto2 <- c("ALL",xpto2)
 xpto3 <- unique( as.character(dfmerge$RELIGION))
 xpto3 <- c("ALL", xpto3)
 
+xpto4 <- unique( as.character(dfmerge$INSURANCE))
+xpto4 <- c("ALL", xpto4)
+
 
 
 
@@ -358,6 +361,9 @@ body <- dashboardBody(
                 selectInput(inputId = "in_ethnicity",
                             label = "Choose an ethnicity:",
                             choices = xpto2 ),
+                selectInput(inputId = "in_insurance",
+                            label = "Choose an insurance type:",
+                            choices = xpto4 ),
                 
                 selectInput(inputId = "in_religion",
                             label = "Choose a religion:",
@@ -755,6 +761,7 @@ server <- (function(input, output,session) {
         filter(ETHNICITY == input$in_ethnicity)
     }
   })
+
   
   filtered_religion <- reactive({
     if(input$in_religion == "ALL"){
@@ -764,6 +771,8 @@ server <- (function(input, output,session) {
         filter(RELIGION == input$in_religion)
     }
   })
+  
+  
   
   filtered_age <- reactive({
     if(input$in_age == "-1" ){
@@ -775,10 +784,19 @@ server <- (function(input, output,session) {
     }
   })
   
+  filtered_insurance <- reactive({
+    if(input$in_insurance == "ALL"){
+      filtered_age()
+    } else {
+      filtered_age() %>% 
+        filter(INSURANCE == input$in_insurance)
+    }
+  })
+  
   
   
   fully_filtered <- eventReactive(input$select, {
-    filtered_age()
+    filtered_insurance()
   })
   
   
