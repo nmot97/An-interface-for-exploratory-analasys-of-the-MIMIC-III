@@ -28,7 +28,9 @@ DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
 # DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
 
 colnames(dfmerge)[colnames(dfmerge) == 'SUBJECT_ID.x'] <- 'SUBJECT_ID'
-dfmerge <- dfmerge[-c(29)]
+dfmerge <- dfmerge[-c(29,28)]
+
+colnames(dfmerge)[2] <- "ROW_ID"
 
 n_adm <- n_distinct(ADMISSIONS$SUBJECT_ID)
 
@@ -56,12 +58,15 @@ PATIENTS$DOD_HOSP <- gsub(PATIENTS$DOD_HOSP,pattern=" 00:00:00",replacement="",f
 PATIENTS$DOD_SSN <- gsub(PATIENTS$DOD_SSN,pattern=" 00:00:00",replacement="",fixed=T)
 
 
-#ADMISSIONS <- ADMISSIONS %>% distinct(SUBJECT_ID, .keep_all = TRUE) ## remover rows com duplicados baseado no id
-#df = merge(x=ADMISSIONS_unique,y=PATIENTS,by="SUBJECT_ID")
+ADMISSIONS_unique <- ADMISSIONS %>% distinct(SUBJECT_ID, .keep_all = TRUE) ## remover rows com duplicados baseado no id
+df = merge(x=ADMISSIONS_unique,y=PATIENTS,by="SUBJECT_ID")
 #View(df)
 
+df$DOB <- as.Date(df$DOB)
+df$ADMITTIME <- as.Date(df$ADMITTIME)
+
 #df <- df %>% distinct(SUBJECT_ID, .keep_all =  TRUE)
-#df$age <- age_calc(df$DOB, df$ADMITTIME, units = "years",precise = FALSE)
+df$age <- age_calc(df$DOB, df$ADMITTIME, units = "years",precise = FALSE)
 
 #gender <- data.frame(unclass(table(dfmerge$GENDER)))
 #n_males <-gender[2,] / sum(gender) 
@@ -250,14 +255,16 @@ x1 <- count(filter(PATIENTS, EXPIRE_FLAG == "1"))/46520
 
 t.first <- ADMISSIONS[match(unique(ADMISSIONS$SUBJECT_ID), ADMISSIONS$SUBJECT_ID),]
 
+t.first2 <- dfmerge[match(unique(dfmerge$ROW_ID), dfmerge$ROW_ID),]
+
 dfmerge_tfirst_patientes <- merge(PATIENTS, t.first, by = "SUBJECT_ID")
 
 dfmerge_tfirst_patientes <- subset(dfmerge_tfirst_patientes, select = -c(DOD_SSN, DOD_HOSP,ROW_ID.x ,ROW_ID.y, EXPIRE_FLAG, DEATHTIME, HOSPITAL_EXPIRE_FLAG, HAS_CHARTEVENTS_DATA))
 
+dfmerge3 <- subset(df, select = -c(ROW_ID.x, ROW_ID.y, HOSPITAL_EXPIRE_FLAG ,HAS_CHARTEVENTS_DATA, EXPIRE_FLAG))
+df
 
-
-
-
+dfmerge3 <- dfmerge3 %>% mutate(across(c(ADMISSION_TYPE, ADMISSION_LOCATION, INSURANCE, LANGUAGE, RELIGION, MARITAL_STATUS, ETHNICITY, EDREGTIME, EDOUTTIME, DIAGNOSIS, GENDER, DOB, DOD, DOD_HOSP, DOD_SSN ,ADMITTIME, DISCHTIME, DEATHTIME), as.factor))
 
 header <- dashboardHeader(title="MIMIC-III"
 )
@@ -729,7 +736,7 @@ server <- (function(input, output,session) {
   )
   
   
-  dfmerge3 <- subset(dfmerge, select = -c(HOSPITAL_EXPIRE_FLAG,HAS_CHARTEVENTS_DATA, EXPIRE_FLAG))
+  
   
   filtered_gender <- reactive({
     if(input$in_gender == "ALL"){
