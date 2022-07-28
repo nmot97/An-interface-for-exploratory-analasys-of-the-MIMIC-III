@@ -129,6 +129,21 @@ xpto3 <- c("ALL", xpto3)
 xpto4 <- unique( as.character(dfmerge$INSURANCE))
 xpto4 <- c("ALL", xpto4)
 
+xpto5 <- unique( as.character(dfmerge$ADMISSION_TYPE))
+xpto5 <- c("ALL", xpto5)
+
+xpto6 <- unique( as.character(dfmerge$ADMISSION_LOCATION))
+xpto6 <- c("ALL", xpto6)
+
+xpto7 <- unique( as.character(dfmerge$DISCHARGE_LOCATION))
+xpto7 <- c("ALL", xpto7)
+
+xpto8 <- unique( as.character(dfmerge$HOSPITAL_EXPIRE_FLAG))
+xpto8 <- c("ALL", xpto8)
+
+xpto9 <- unique( as.character(dfmerge$DIAGNOSIS))
+xpto9 <- c("ALL", xpto9)
+
 
 
 
@@ -361,13 +376,31 @@ body <- dashboardBody(
                 selectInput(inputId = "in_ethnicity",
                             label = "Choose an ethnicity:",
                             choices = xpto2 ),
-                selectInput(inputId = "in_insurance",
-                            label = "Choose an insurance type:",
-                            choices = xpto4 ),
-                
                 selectInput(inputId = "in_religion",
                             label = "Choose a religion:",
                             choices = xpto3),
+                                selectInput(inputId = "in_insurance",
+                            label = "Choose an insurance type:",
+                            choices = xpto4 ),
+                selectInput(inputId = "in_admtype",
+                            label = "Choose an admission type:",
+                            choices = xpto5 ),
+                
+                selectInput(inputId = "in_admloc",
+                            label = "Choose an admission location:",
+                            choices = xpto6 ),
+                
+                selectInput(inputId = "in_disloc",
+                            label = "Choose an discharge location:",
+                            choices = xpto7 ),
+                
+                selectInput(inputId = "in_hospex",
+                            label = "Choose if alive(1) or dead(0):",
+                            choices = xpto8 ),
+                selectInput(inputId = "in_diag",
+                            label = "Choose the first diagnose:",
+                            choices = xpto9 ),
+                
                 sliderInput( inputId = "in_age",
                              label = "Age", min = -1, max = 300,
                              value = c(-1,-1)
@@ -793,10 +826,54 @@ server <- (function(input, output,session) {
     }
   })
   
+  filtered_admtype <- reactive({
+    if(input$in_admtype == "ALL"){
+      filtered_insurance()
+    } else {
+      filtered_insurance() %>% 
+        filter(ADMISSION_TYPE == input$in_admtype)
+    }
+  })
+  
+  filtered_admloc <- reactive({
+    if(input$in_admloc == "ALL"){
+      filtered_admtype()
+    } else {
+      filtered_admtype() %>% 
+        filter(ADMISSION_LOCATION == input$in_admloc)
+    }
+  })
+  
+  filtered_disloc <- reactive({
+    if(input$in_disloc == "ALL"){
+      filtered_admloc()
+    } else {
+      filtered_admloc() %>% 
+        filter(DISCHARGE_LOCATION == input$in_disloc)
+    }
+  })
+  
+  filtered_hospex <- reactive({
+    if(input$in_hospex == "ALL"){
+      filtered_disloc()
+    } else {
+      filtered_disloc() %>% 
+        filter(HOSPITAL_EXPIRE_FLAG == input$in_hospex)
+    }
+  })
+  
+  filtered_diag <- reactive({
+    if(input$in_diag == "ALL"){
+      filtered_hospex()
+    } else {
+      filtered_hospex() %>% 
+        filter(DIAGNOSIS == input$in_diag)
+    }
+  })
   
   
   fully_filtered <- eventReactive(input$select, {
-    filtered_insurance()
+    filtered_diag()
   })
   
   
