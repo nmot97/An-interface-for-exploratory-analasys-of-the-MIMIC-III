@@ -17,6 +17,7 @@ ICUSTAYS <- read.csv("~/GitHub/MIMIC-III/ICUSTAYS.csv")
 PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
 dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
 DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
+D_ICD_DIAGNOSES <- read.csv("~/GitHub/MIMIC-III/D_ICD_DIAGNOSES.csv")
 
 #LINUX
 
@@ -284,6 +285,13 @@ df
 
 dfmerge3 <- dfmerge3 %>% mutate(across(c(ADMISSION_TYPE, DISCHARGE_LOCATION,ADMISSION_LOCATION, INSURANCE, LANGUAGE, RELIGION, MARITAL_STATUS, ETHNICITY, EDREGTIME, EDOUTTIME, DIAGNOSIS, GENDER, DOB, DOD, DOD_HOSP, DOD_SSN, HOSPITAL_EXPIRE_FLAG ,ADMITTIME, DISCHTIME, DEATHTIME), as.factor))
 
+
+diagnoses_with_description <- merge( DIAGNOSES_ICD, D_ICD_DIAGNOSES , by = "ICD9_CODE", all.x = TRUE)
+
+diagnoses_with_description <- subset(diagnoses_with_description, select = -c(ROW_ID.y, ROW_ID.x))
+
+
+
 header <- dashboardHeader(title="MIMIC-III"
 )
 
@@ -307,12 +315,14 @@ sidebar <- dashboardSidebar(
     
     menuItem("Diagnoses", tabName = "diagnoses", icon = icon("stethoscope"),
              startExpanded = FALSE,
-             menuSubItem("General info",
+             menuSubItem("General diagnoses info",
                          tabName = "diagnoses1"),
              menuSubItem("Especific ICD9 Code",
                          tabName = "diagnoses2"),
-             menuSubItem("First Diagnoses",
-                         tabName = "diagnoses3")
+             menuSubItem("First diagnoses",
+                         tabName = "diagnoses3"),
+             menuSubItem("Diagnoses search by patient ID",
+                         tabName = "diagnoses4")
     )
   )
 )
@@ -687,7 +697,26 @@ body <- dashboardBody(
     
     
     
-    
+    tabItem(tabName = "diagnoses4",
+            h5("Search by patient ID to see all diagnoses of that patient:"),
+            fluidRow(
+              box(
+                width = 2,
+                selectizeInput("diagnose_patid", "Choose or type patient ID:", choices = NULL)
+                
+              ), #fim box
+              
+              
+              box(
+                DT::dataTableOutput("diagnose_patientid"),
+                #tableOutput("patient_id"),
+                width = 9,
+              ),
+              
+              
+              
+            )
+    ),
     
     
     
@@ -1904,7 +1933,7 @@ server <- (function(input, output,session) {
     
   })
   
-  updateSelectizeInput(session, "patid", choices = PATIENTS$SUBJECT_ID, server = T)
+  updateSelectizeInput(session, "patid", choices = PATIENTS$SUBJECT_ID, server = T, selected = "2")
   
   
   # observeEvent(input$buttonid,
@@ -1916,10 +1945,24 @@ server <- (function(input, output,session) {
   #   filter( PATIENTS, SUBJECT_ID == "input$patid")
   # })
   
+  
+  
+  
+  
   output$patientid <- DT::renderDataTable({
     
     
     DT::datatable( filter( dfmerge_tfirst_patientes, SUBJECT_ID == input$patid), options = list(scrollX = TRUE) )
+  })
+  
+  
+  updateSelectizeInput(session, "diagnose_patid", choices = PATIENTS$SUBJECT_ID, server = T, selected = "2")
+  
+  
+  output$diagnose_patientid <- DT::renderDataTable({
+    
+    
+    DT::datatable( filter( diagnoses_with_description, SUBJECT_ID == input$diagnose_patid), options = list(scrollX = TRUE) )
   })
   
   
@@ -1931,3 +1974,6 @@ shinyApp(ui, server)
 
 #COMPARAR PERCURSO DO DOENTE PARA UMA DOEN???A ( onde tenha muitos outliers). Um outlier vs poucos dias. 1 aleatorio. 
 # + grafico caregivers . Mostrar itens do paciente internado + numero de caregivers + exames? 
+
+
+#METER AGE NO SEARCH BY PATIENT ID
