@@ -272,23 +272,27 @@ e_2 <- firstseq_num %>% filter(str_detect(ICD9_CODE, "^E"))
 
 x1 <- count(filter(PATIENTS, EXPIRE_FLAG == "1"))/46520
 
-t.first <- ADMISSIONS[match(unique(ADMISSIONS$SUBJECT_ID), ADMISSIONS$SUBJECT_ID),]
+# t.first <- ADMISSIONS[match(unique(ADMISSIONS$SUBJECT_ID), ADMISSIONS$SUBJECT_ID),]
 
-t.first2 <- dfmerge[match(unique(dfmerge$ROW_ID), dfmerge$ROW_ID),]
+# t.first2 <- dfmerge[match(unique(dfmerge$ROW_ID), dfmerge$ROW_ID),]
 
-dfmerge_tfirst_patientes <- merge(PATIENTS, t.first, by = "SUBJECT_ID")
-
-dfmerge_tfirst_patientes <- subset(dfmerge_tfirst_patientes, select = -c(DOD_SSN, DOD_HOSP,ROW_ID.x ,ROW_ID.y, EXPIRE_FLAG, DEATHTIME, HOSPITAL_EXPIRE_FLAG, HAS_CHARTEVENTS_DATA))
+# dfmerge_tfirst_patientes <- merge(PATIENTS, t.first, by = "SUBJECT_ID")
+# 
+# dfmerge_tfirst_patientes <- subset(dfmerge_tfirst_patientes, select = -c(DOD_SSN, DOD_HOSP,ROW_ID.x ,ROW_ID.y, EXPIRE_FLAG, DEATHTIME, HOSPITAL_EXPIRE_FLAG, HAS_CHARTEVENTS_DATA))
 
 dfmerge3 <- subset(df, select = -c(ROW_ID.x, ROW_ID.y,HAS_CHARTEVENTS_DATA, EXPIRE_FLAG))
-df
+
 
 dfmerge3 <- dfmerge3 %>% mutate(across(c(ADMISSION_TYPE, DISCHARGE_LOCATION,ADMISSION_LOCATION, INSURANCE, LANGUAGE, RELIGION, MARITAL_STATUS, ETHNICITY, EDREGTIME, EDOUTTIME, DIAGNOSIS, GENDER, DOB, DOD, DOD_HOSP, DOD_SSN, HOSPITAL_EXPIRE_FLAG ,ADMITTIME, DISCHTIME, DEATHTIME), as.factor))
 
+dfmerge3 <- dfmerge3 %>% relocate(age, .before=HADM_ID)
+dfmerge3 <- dfmerge3 %>% relocate(GENDER, .before = HADM_ID)
+dfmerge3 <- dfmerge3 %>% relocate(ETHNICITY, .before = HADM_ID)
 
 diagnoses_with_description <- merge( DIAGNOSES_ICD, D_ICD_DIAGNOSES , by = "ICD9_CODE", all.x = TRUE)
 
 diagnoses_with_description <- subset(diagnoses_with_description, select = -c(ROW_ID.y, ROW_ID.x))
+
 
 
 
@@ -1952,7 +1956,7 @@ server <- (function(input, output,session) {
   output$patientid <- DT::renderDataTable({
     
     
-    DT::datatable( filter( dfmerge_tfirst_patientes, SUBJECT_ID == input$patid), options = list(scrollX = TRUE) )
+    DT::datatable( filter( dfmerge3, SUBJECT_ID == input$patid), options = list(scrollX = TRUE) )
   })
   
   
