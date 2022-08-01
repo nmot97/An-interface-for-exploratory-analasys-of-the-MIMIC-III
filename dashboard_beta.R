@@ -9,6 +9,7 @@ library(eeptools)
 library(tibble)
 library(DT)
 library(ggplot2)
+library(data.table)
 
 # WINDOWS
 setwd("~/GitHub/MIMIC-III")
@@ -18,6 +19,7 @@ PATIENTS <- read.csv("~/GitHub/MIMIC-III/PATIENTS.csv")
 dfmerge <- read.csv("~/GitHub/MIMIC-III/dfmerge.csv")
 DIAGNOSES_ICD <- read.csv("~/GitHub/MIMIC-III/DIAGNOSES_ICD.csv")
 D_ICD_DIAGNOSES <- read.csv("~/GitHub/MIMIC-III/D_ICD_DIAGNOSES.csv")
+# INPUTEVENTS_CV <- fread("~/GitHub/MIMIC-III/INPUTEVENTS_CV.csv", data.table=FALSE)
 
 #LINUX
 
@@ -298,7 +300,22 @@ clean <- aggregate(LOS~HADM_ID, data=clean, FUN=sum) # soma os LOS dos HADM_ID i
 
 diagnoses_with_description <- merge(diagnoses_with_description, clean, by = "HADM_ID", all.x = TRUE)
 
-
+# 
+# INPUTEVENTS_CV <- INPUTEVENTS_CV[order(INPUTEVENTS_CV$SUBJECT_ID),] 
+# gato1 <- INPUTEVENTS_CV[1:3000000,]
+# write.csv(gato1,"gato1.csv")
+# 
+# gato2 <- INPUTEVENTS_CV[3000001:6000000,]
+# write.csv(gato2,"gato2.csv")
+# 
+# gato3 <- INPUTEVENTS_CV[6000001:10000000,]
+# write.csv(gato1,"gato3.csv")
+# 
+# gato4 <- INPUTEVENTS_CV[10000001:13000000,]
+# write.csv(gato1,"gato4.csv")
+# 
+# gato5 <- INPUTEVENTS_CV[13000001:17527935,]
+# write.csv(gato1,"gato5.csv")
 
 
 header <- dashboardHeader(title="MIMIC-III"
