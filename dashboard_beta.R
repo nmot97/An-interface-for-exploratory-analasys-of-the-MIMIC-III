@@ -218,9 +218,22 @@ diagnosesPlot2 <- data.frame(a, Frequency2)
 
 # print (df)
 
-dfmerge2 <- merge(dfmerge,DIAGNOSES_ICD,by="SUBJECT_ID")
-dfmerge2 <- dfmerge2[ -c(2,4,5,6,11,15,16,18,19,21,22,23,24,28,29,30) ]
-colnames(dfmerge2)[colnames(dfmerge2) == 'HADM_ID.x'] <- 'HADM_ID'
+#dfmerge2 <- left_join(DIAGNOSES_ICD, ICUSTAYS ,by= c("SUBJECT_ID","HADM_ID")) ## VER ISTO TENHO MUITAS DUVIDAS AQUI
+#acho que nao posso dar merge a isto pq o icustays é unico, ver caso do subject_id = 7
+# dfmerge <- subset(dfmerge, select = -c(SUBJECT_ID.y))
+#dfmerge2 <- merge(dfmerge2, dfmerge[,c("age","SUBJECT_ID")], by = "SUBJECT_ID", all = TRUE)
+
+dfmerge2 <- left_join(DIAGNOSES_ICD, df[,c("GENDER","INSURANCE","age","SUBJECT_ID")], by = "SUBJECT_ID")
+clean2 <- aggregate(LOS~HADM_ID+SUBJECT_ID, data=ICUSTAYS, FUN=sum)
+dfmerge2 <- left_join(dfmerge2 , clean2, by = c("SUBJECT_ID", "HADM_ID"))
+# dfmerg3 <- merge(dfmerge,DIAGNOSES_ICD,by="SUBJECT_ID")
+
+
+
+
+
+# dfmerge2 <- dfmerge2[ -c(2,4,5,6,11,15,16,18,19,21,22,23,24,28,29,30) ]
+# colnames(dfmerge2)[colnames(dfmerge2) == 'HADM_ID.x'] <- 'HADM_ID'
 
 
 
