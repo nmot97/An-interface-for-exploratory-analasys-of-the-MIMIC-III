@@ -30,6 +30,9 @@ D_ICD_DIAGNOSES <- read.csv("~/GitHub/MIMIC-III/D_ICD_DIAGNOSES.csv")
 # dfmerge <- read_csv("~/Documents/Github/MIMIC-III/dfmerge.csv")
 # DIAGNOSES_ICD <- read_csv("~/Documents/Github/MIMIC-III/DIAGNOSES_ICD.csv")
 
+DIAGNOSES_ICD <- left_join(DIAGNOSES_ICD, D_ICD_DIAGNOSES[,c("ICD9_CODE","SHORT_TITLE","LONG_TITLE")], by = "ICD9_CODE")
+
+
 colnames(dfmerge)[colnames(dfmerge) == 'SUBJECT_ID.x'] <- 'SUBJECT_ID'
 dfmerge <- dfmerge[-c(29,28)]
 
@@ -304,14 +307,14 @@ dfmerge3 <- dfmerge3 %>% relocate(age, .before=HADM_ID)
 dfmerge3 <- dfmerge3 %>% relocate(GENDER, .before = HADM_ID)
 dfmerge3 <- dfmerge3 %>% relocate(ETHNICITY, .before = HADM_ID)
 
-diagnoses_with_description <- merge( DIAGNOSES_ICD, D_ICD_DIAGNOSES , by = "ICD9_CODE", all.x = TRUE)
+# diagnoses_with_description <- merge( DIAGNOSES_ICD, D_ICD_DIAGNOSES , by = "ICD9_CODE", all.x = TRUE)
 
-diagnoses_with_description <- subset(diagnoses_with_description, select = -c(ROW_ID.y, ROW_ID.x))
+# diagnoses_with_description <- subset(diagnoses_with_description, select = -c(ROW_ID.y, ROW_ID.x))
 
 clean <- subset(ICUSTAYS, select = -c(1,2,4,5,6,7,8,9,10,11))
 clean <- aggregate(LOS~HADM_ID, data=clean, FUN=sum) # soma os LOS dos HADM_ID iguais
 
-diagnoses_with_description <- merge(diagnoses_with_description, clean, by = "HADM_ID", all.x = TRUE)
+diagnoses_with_LOS <- merge(DIAGNOSES_ICD, clean, by = "HADM_ID", all.x = TRUE)
 
 # 
 # INPUTEVENTS_CV <- INPUTEVENTS_CV[order(INPUTEVENTS_CV$SUBJECT_ID),] 
@@ -2001,7 +2004,7 @@ server <- (function(input, output,session) {
   output$diagnose_patientid <- DT::renderDataTable({
     
     
-    DT::datatable( filter( diagnoses_with_description, SUBJECT_ID == input$diagnose_patid), options = list(scrollX = TRUE) )
+    DT::datatable( filter( diagnoses_with_LOS, SUBJECT_ID == input$diagnose_patid), options = list(scrollX = TRUE) )
   })
   
   
