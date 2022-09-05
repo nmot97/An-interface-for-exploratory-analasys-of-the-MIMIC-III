@@ -70,6 +70,7 @@ df = merge(x=ADMISSIONS_unique,y=PATIENTS,by="SUBJECT_ID")
 
 df$DOB <- as.Date(df$DOB)
 df$ADMITTIME <- as.Date(df$ADMITTIME)
+df$EXPIRE_FLAG <- as.factor(df$EXPIRE_FLAG)
 
 #df <- df %>% distinct(SUBJECT_ID, .keep_all =  TRUE)
 df$age <- age_calc(df$DOB, df$ADMITTIME, units = "years",precise = FALSE)
@@ -298,7 +299,7 @@ x1 <- count(filter(PATIENTS, EXPIRE_FLAG == "1"))/46520
 # 
 # dfmerge_tfirst_patientes <- subset(dfmerge_tfirst_patientes, select = -c(DOD_SSN, DOD_HOSP,ROW_ID.x ,ROW_ID.y, EXPIRE_FLAG, DEATHTIME, HOSPITAL_EXPIRE_FLAG, HAS_CHARTEVENTS_DATA))
 
-dfmerge3 <- subset(df, select = -c(ROW_ID.x, ROW_ID.y,HAS_CHARTEVENTS_DATA, EXPIRE_FLAG))
+dfmerge3 <- subset(df, select = -c(ROW_ID.x, ROW_ID.y,HAS_CHARTEVENTS_DATA))
 
 
 dfmerge3 <- dfmerge3 %>% mutate(across(c(ADMISSION_TYPE, DISCHARGE_LOCATION,ADMISSION_LOCATION, INSURANCE, LANGUAGE, RELIGION, MARITAL_STATUS, ETHNICITY, EDREGTIME, EDOUTTIME, DIAGNOSIS, GENDER, DOB, DOD, DOD_HOSP, DOD_SSN, HOSPITAL_EXPIRE_FLAG ,ADMITTIME, DISCHTIME, DEATHTIME), as.factor))
@@ -361,6 +362,8 @@ sidebar <- dashboardSidebar(
                          tabName = "diagnoses1"),
              menuSubItem("Especific ICD9 Code",
                          tabName = "diagnoses2"),
+             menuSubItem("Search by ICD",
+                         tabName = "diagnoses5"),
              menuSubItem("First diagnoses",
                          tabName = "diagnoses3"),
              menuSubItem("Diagnoses search by patient ID",
@@ -754,6 +757,33 @@ body <- dashboardBody(
                 #tableOutput("patient_id"),
                 width = 9,
               ),
+              
+              
+              
+            )
+    ),
+    
+    tabItem(tabName = "diagnoses5",
+            h5("Search by ICD-9 code:"),
+            fluidRow(
+              box(
+                width = 2,
+                selectizeInput("diagnose_icd", "Choose or type ICD:", choices = NULL)
+                
+              ), #fim box
+              
+              
+              box(
+                DT::dataTableOutput("diagnose_icdcode"),
+                #tableOutput("patient_id"),
+                width = 9,
+              ),
+              
+              box(
+                verbatimTextOutput("summarydiagnoses5"),
+                width = 11,
+                
+              )
               
               
               
@@ -2001,10 +2031,23 @@ server <- (function(input, output,session) {
   updateSelectizeInput(session, "diagnose_patid", choices = PATIENTS$SUBJECT_ID, server = T, selected = "2")
   
   
+  updateSelectizeInput(session, "diagnose_icd", choices = D_ICD_DIAGNOSES$ICD9_CODE, server = T, selected = "0010")
+  
   output$diagnose_patientid <- DT::renderDataTable({
     
     
     DT::datatable( filter( diagnoses_with_LOS, SUBJECT_ID == input$diagnose_patid), options = list(scrollX = TRUE) )
+  })
+  
+  output$diagnose_icdcode <- DT::renderDataTable({
+    
+    
+    DT::datatable( filter( DIAGNOSES_ICD, ICD9_CODE == input$diagnose_icd), options = list(scrollX = TRUE) )
+  })
+  
+  output$summarydiagnoses5 <- renderPrint({
+    
+    summary(filter(left_join(DIAGNOSES_ICD, dfmerge3, by = "SUBJECT_ID"),ICD9_CODE == input$diagnose_icd))
   })
   
   
