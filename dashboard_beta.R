@@ -344,9 +344,10 @@ header <- dashboardHeader(title="MIMIC-III"
 
 sidebar <- dashboardSidebar(
   sidebarMenu(
-    menuItem("Dashboard", tabName = "home", icon = icon("home")),
-    menuItem("Pesquisa", icon = icon("search"), tabName = "search",
-             badgeLabel = "beta", badgeColor = "green"),
+    menuItem("Dashboard", tabName = "home", icon = icon("home"),
+             badgeLabel = "Home", badgeColor = "green"),
+    # menuItem("Pesquisa", icon = icon("search"), tabName = "search",
+    #          badgeLabel = "beta", badgeColor = "green"),
     menuItem("Patients", tabName = "patientss", icon = icon("hospital-user"),
              startExpanded = FALSE,
              menuSubItem(" General Patient Info",
@@ -358,7 +359,14 @@ sidebar <- dashboardSidebar(
              
     ),
     
-    menuItem("Admissions", tabName = "admissions", icon = icon("book-medical")),
+    menuItem("Admissions", tabName = "admissions", icon = icon("book-medical"),
+             startExpanded = FALSE,
+             menuSubItem("General Admissions info",
+                         tabName = "admissions2"),
+    
+             menuSubItem("Search by admission ID",
+                         tabName = "admissions1")
+             ),
     
     menuItem("Diagnoses", tabName = "diagnoses", icon = icon("stethoscope"),
              startExpanded = FALSE,
@@ -591,7 +599,7 @@ body <- dashboardBody(
     
     
     
-    tabItem(tabName = "admissions",
+    tabItem(tabName = "admissions2",
             h3("Details of every patient admission on the hospital"),
             br(),
             h4("There's a total of 58976 admissions registered on the database. Each one has a diferent ID , called HADM_ID. "),
@@ -615,6 +623,35 @@ body <- dashboardBody(
             
             
     ), #fim admissions
+    
+    
+    
+    tabItem(tabName = "admissions1",
+            h5("Search by admission ID to see more information about that particular admission:"),
+            fluidRow(
+              box(
+                width = 2,
+                selectizeInput("admission_id_input", "Choose or type admission ID:", choices = NULL)
+                
+              ), #fim box
+              
+              
+              box(
+                DT::dataTableOutput("admission_table"),
+                #tableOutput("patient_id"),
+                width = 9,
+              ),
+              
+              
+              
+            )
+    ),
+    
+    
+    
+    
+    
+    
     
     tabItem(tabName = "diagnoses1",
             h3("General view of the ICD-9 Codes"),
@@ -829,15 +866,15 @@ ui <- dashboardPage(header, sidebar, body)
 # ********************************************* SERVER *****************************************************
 server <- (function(input, output,session) {
   
-  output$grafico <- renderPlot({
-    if( is.factor(dfmerge[,input$inState]) || is.character(dfmerge[,input$inState])) {
-      
-      barplot(summary(as.factor(dfmerge[,input$inState])),col = "#75AADB")
-    }
-    else
-      
-      hist((dfmerge[,input$inState]),col = "#75AADB")
-  })
+  # output$grafico <- renderPlot({
+  #   if( is.factor(dfmerge[,input$inState]) || is.character(dfmerge[,input$inState])) {
+  #     
+  #     barplot(summary(as.factor(dfmerge[,input$inState])),col = "#75AADB")
+  #   }
+  #   else
+  #     
+  #     hist((dfmerge[,input$inState]),col = "#75AADB")
+  # })
   
   
   
@@ -2007,7 +2044,7 @@ server <- (function(input, output,session) {
       text = ~Frequency2,
       textposition = "auto",
       hoverinfo = "text",
-      hovertext = paste("IC9-Code:", diagnosesPlot2$ICD9CODE)
+      hovertext = paste("IC9-Code:", diagnosesPlot2$a)
     ) %>%
       layout(title= "Frequency of each ICD9 code"
              
@@ -2018,6 +2055,9 @@ server <- (function(input, output,session) {
   
   updateSelectizeInput(session, "patid", choices = PATIENTS$SUBJECT_ID, server = T, selected = "2")
   
+
+  
+ 
   
   # observeEvent(input$buttonid,
   #              {
@@ -2053,8 +2093,9 @@ server <- (function(input, output,session) {
   output$diagnose_icdcode <- DT::renderDataTable({
     
     
-    DT::datatable( filter( DIAGNOSES_ICD, ICD9_CODE == input$diagnose_icd), options = list(scrollX = TRUE) )
+    DT::datatable( filter( diagnoses_with_LOS, ICD9_CODE == input$diagnose_icd), options = list(scrollX = TRUE) )
   })
+  
   
   output$summarydiagnoses5 <- renderPrint({
     
@@ -2066,6 +2107,16 @@ server <- (function(input, output,session) {
     
     DT::datatable( firstseq_compare, options = list(scrollX = TRUE) )
   })
+  
+  updateSelectizeInput(session, "admission_id_input", choices = ADMISSIONS$HADM_ID, server = T)
+  
+  output$admission_table <- DT::renderDataTable({
+    
+    
+    DT::datatable(  filter( subset(ADMISSIONS, select = -c(ROW_ID)) , HADM_ID == input$admission_id_input), options = list(scrollX = TRUE) )
+  })
+  
+  
   
   
 })
