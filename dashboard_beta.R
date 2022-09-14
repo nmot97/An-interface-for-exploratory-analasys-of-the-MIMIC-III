@@ -317,6 +317,10 @@ clean <- aggregate(LOS~HADM_ID, data=clean, FUN=sum) # soma os LOS dos HADM_ID i
 
 diagnoses_with_LOS <- merge(DIAGNOSES_ICD, clean, by = "HADM_ID", all.x = TRUE)
 
+firstseq_compare <- left_join(firstseq_num, ADMISSIONS, by = "HADM_ID")
+firstseq_compare <- subset(firstseq_compare, select = -c(1,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,24,25))
+colnames(firstseq_compare)[1] <- "SUBJECT_ID"
+
 # 
 # INPUTEVENTS_CV <- INPUTEVENTS_CV[order(INPUTEVENTS_CV$SUBJECT_ID),] 
 # gato1 <- INPUTEVENTS_CV[1:3000000,]
@@ -736,6 +740,13 @@ body <- dashboardBody(
                 
                 
               ),
+              
+              
+              box( 
+                DT::dataTableOutput("firstseqcompare"),
+                width = 12,
+                
+              )
               
             )
     ),
@@ -2035,7 +2046,7 @@ server <- (function(input, output,session) {
   
   output$diagnose_patientid <- DT::renderDataTable({
     
-    
+      
     DT::datatable( filter( diagnoses_with_LOS, SUBJECT_ID == input$diagnose_patid), options = list(scrollX = TRUE) )
   })
   
@@ -2048,6 +2059,12 @@ server <- (function(input, output,session) {
   output$summarydiagnoses5 <- renderPrint({
     
     summary(filter(left_join(DIAGNOSES_ICD, dfmerge3, by = "SUBJECT_ID"),ICD9_CODE == input$diagnose_icd))
+  })
+  
+  output$firstseqcompare <- DT::renderDataTable({
+    
+    
+    DT::datatable( firstseq_compare, options = list(scrollX = TRUE) )
   })
   
   
