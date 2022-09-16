@@ -435,6 +435,7 @@ body <- dashboardBody(
               
               sidebarPanel(
                 
+               
                 
                 selectInput(inputId = "in_gender",
                             label = "Choose a gender:",
@@ -476,14 +477,17 @@ body <- dashboardBody(
                 
                 actionButton('select', 'Select'),
                 width = 3
-                
+              
               ),
               mainPanel(
                 
                 
                 verbatimTextOutput("summary"),
-                width = 9
+                width = 9,
                 
+                box(
+                  DT::dataTableOutput("tabelinha"),
+                ),
                 
                 
                 
@@ -532,10 +536,11 @@ body <- dashboardBody(
                 
               ),
               mainPanel(
-                
-                
+                box(
+                  status = "primary",
                 DT::dataTableOutput("doentes"),
                 width = 9
+                )
                 
                 
                 
@@ -761,6 +766,8 @@ body <- dashboardBody(
               ),
               
               box(
+                title = "ICD-9 Codes Description", width = 4, solidHeader = TRUE,
+                status="success",
                 h3("Description of the ICD-9 codes:"),
                 br(),
                 
@@ -1031,6 +1038,10 @@ server <- (function(input, output,session) {
   output$summary <- renderPrint({
     
     summary(fully_filtered())
+  })
+  
+  output$tabelinha <- DT::renderDataTable({
+    DT::datatable(fully_filtered())
   })
   
   output$mytable1 <- DT::renderDataTable({
