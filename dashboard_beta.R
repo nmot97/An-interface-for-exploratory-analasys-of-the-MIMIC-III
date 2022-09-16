@@ -151,6 +151,8 @@ xpto8 <- c("ALL", xpto8)
 xpto9 <- unique( as.character(dfmerge$DIAGNOSIS))
 xpto9 <- c("ALL", xpto9)
 
+xpto10 <- unique( as.character(dfmerge$EXPIRE_FLAG))
+xpto10 <- c("ALL", xpto10)
 
 
 
@@ -463,8 +465,11 @@ body <- dashboardBody(
                             choices = xpto7 ),
                 
                 selectInput(inputId = "in_hospex",
-                            label = "Choose if alive(1) or dead(0):",
+                            label = "Choose if alive(1) or dead(0) [Hospital expire flag]:",
                             choices = xpto8 ),
+                selectInput(inputId = "in_dead",
+                            label = "Choose if alive(1) or dead(0) [Expire flag]:",
+                            choices = xpto10 ),
                 selectInput(inputId = "in_diag",
                             label = "Choose the first diagnose:",
                             choices = xpto9 ),
@@ -1027,10 +1032,19 @@ server <- (function(input, output,session) {
         filter(DIAGNOSIS == input$in_diag)
     }
   })
+  filtered_dead <- reactive({
+    if(input$in_dead == "ALL"){
+      filtered_diag()
+    } else {
+      filtered_diag() %>% 
+        filter(EXPIRE_FLAG == input$in_dead)
+    }
+  })
+  
   
   
   fully_filtered <- eventReactive(input$select, {
-    filtered_diag()
+    filtered_dead()
   })
   
   
@@ -2110,8 +2124,9 @@ server <- (function(input, output,session) {
   
   
   output$summarydiagnoses5 <- renderPrint({
-    
-    summary(filter(left_join(DIAGNOSES_ICD, dfmerge3, by = "SUBJECT_ID"),ICD9_CODE == input$diagnose_icd))
+    temporario <- left_join(diagnoses_with_LOS, dfmerge3, by = "SUBJECT_ID")
+    temporario <- subset (temporario, select= -c(HADM_ID.y))
+    summary(filter(temporario,ICD9_CODE == input$diagnose_icd) )
   })
   
   output$firstseqcompare <- DT::renderDataTable({
