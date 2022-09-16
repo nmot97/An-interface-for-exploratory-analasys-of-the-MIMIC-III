@@ -487,6 +487,7 @@ body <- dashboardBody(
                 
                 box(
                   DT::dataTableOutput("tabelinha"),
+                  width = 14,
                 ),
                 
                 
@@ -1041,7 +1042,7 @@ server <- (function(input, output,session) {
   })
   
   output$tabelinha <- DT::renderDataTable({
-    DT::datatable(fully_filtered())
+    DT::datatable(fully_filtered(),options = list(scrollX = TRUE) )
   })
   
   output$mytable1 <- DT::renderDataTable({
