@@ -243,7 +243,10 @@ dfmerge2 <- left_join(dfmerge2 , clean2, by = c("SUBJECT_ID", "HADM_ID"))
 
 
 
-
+dfmerge2$GENDER <- as.factor(dfmerge2$GENDER)
+dfmerge2$INSURANCE <- as.factor(dfmerge2$INSURANCE)
+dfmerge2$SHORT_TITLE <- as.factor(dfmerge2$SHORT_TITLE)
+dfmerge2$LONG_TITLE <- as.factor(dfmerge2$LONG_TITLE)
 
 temp1 <-filter(dfmerge2, ICD9_CODE <= 1398)
 temp2 <- filter(dfmerge2, ICD9_CODE >= 1400 , ICD9_CODE <= 2399)
@@ -340,6 +343,7 @@ colnames(firstseq_compare)[1] <- "SUBJECT_ID"
 # gato5 <- INPUTEVENTS_CV[13000001:17527935,]
 # write.csv(gato1,"gato5.csv")
 
+bug_solver <- summary(temp1)
 
 header <- dashboardHeader(title="MIMIC-III"
 )
@@ -355,9 +359,9 @@ sidebar <- dashboardSidebar(
              menuSubItem(" General Patient Info",
                          tabName = "patients"),
              menuSubItem(" Patient Search by ID",
-                         tabName = "patients3"),
-             menuSubItem("Especific Patient Search",
-                         tabName = "patients2")
+                         tabName = "patients3")
+             # menuSubItem("Especific Patient Search",
+             #             tabName = "patients2")
              
     ),
     
@@ -365,10 +369,10 @@ sidebar <- dashboardSidebar(
              startExpanded = FALSE,
              menuSubItem("General Admissions info",
                          tabName = "admissions2"),
-    
+             
              menuSubItem("Search by admission ID",
                          tabName = "admissions1")
-             ),
+    ),
     
     menuItem("Diagnoses", tabName = "diagnoses", icon = icon("stethoscope"),
              startExpanded = FALSE,
@@ -437,7 +441,7 @@ body <- dashboardBody(
               
               sidebarPanel(
                 
-               
+                
                 
                 selectInput(inputId = "in_gender",
                             label = "Choose a gender:",
@@ -449,7 +453,7 @@ body <- dashboardBody(
                 selectInput(inputId = "in_religion",
                             label = "Choose a religion:",
                             choices = xpto3),
-                                selectInput(inputId = "in_insurance",
+                selectInput(inputId = "in_insurance",
                             label = "Choose an insurance type:",
                             choices = xpto4 ),
                 selectInput(inputId = "in_admtype",
@@ -482,7 +486,7 @@ body <- dashboardBody(
                 
                 actionButton('select', 'Select'),
                 width = 3
-              
+                
               ),
               mainPanel(
                 
@@ -491,6 +495,7 @@ body <- dashboardBody(
                 width = 9,
                 
                 box(
+                  status = "primary",
                   DT::dataTableOutput("tabelinha"),
                   width = 14,
                 ),
@@ -506,70 +511,71 @@ body <- dashboardBody(
             
     ), #fimpatients
     
-    tabItem(tabName = "patients2",
-            h4("Filter to find general info about patients"),
-            sidebarLayout(
-              
-              
-              sidebarPanel(
-                
-                
-                selectInput( "code93", "Select the ICD9 code", choices = c(
-                  "-",
-                  "INFECTIOUS AND PARASITIC DISEASES (001-139)" ="parasit",
-                  "NEOPLASMS (140-239)" = "neoplasm",
-                  "ENDOCRINE, NUTRITIONAL AND METABOLIC DISEASES, AND IMMUNITY DISORDERS (240-279)" = "endocrine",
-                  "DISEASES OF THE BLOOD AND BLOOD-FORMING ORGANS (280-289)" = "blood",
-                  "MENTAL DISORDERS (290-319)" = "mental",
-                  "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)" = "nervous",
-                  "DISEASES OF THE CIRCULATORY SYSTEM (390-459)" = "circulatory",
-                  "DISEASES OF THE RESPIRATORY SYSTEM (460-519)" = "respiratory",
-                  "DISEASES OF THE DIGESTIVE SYSTEM (520-579)" = "digestive",
-                  "DISEASES OF THE GENITOURINARY SYSTEM (580-629)" = "genitourinary",
-                  "COMPLICATIONS OF PREGNANCY, CHILDBIRTH, AND THE PUERPERIUM (630-679)" = "pregnancy",
-                  "DISEASES OF THE SKIN AND SUBCUTANEOUS TISSUE (680-709)" = "skin",
-                  "DISEASES OF THE MUSCULOSKELETAL SYSTEM AND CONNECTIVE TISSUE (710-739)" ="muscle",
-                  "CONGENITAL ANOMALIES (740-759)" = "anomalies",
-                  "CERTAIN CONDITIONS ORIGINATING IN THE PERINATAL PERIOD (760-779)" = "perinatal",
-                  "SYMPTOMS, SIGNS, AND ILL-DEFINED CONDITIONS (780-799)" ="signs",
-                  "INJURY AND POISONING (800-999)" ="poison",
-                  "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)" ="v1",
-                  "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)" = "v2"
-                ) 
-                ),
-                
-                width = 3
-                
-              ),
-              mainPanel(
-                box(
-                  status = "primary",
-                DT::dataTableOutput("doentes"),
-                width = 9
-                )
-                
-                
-                
-                
-              ),
-              
-              
-              
-              
-            ), 
-            
-            
-            
-    ), #fimpatients
+    # tabItem(tabName = "patients2",
+    #         h4("Filter to find general info about patients"),
+    #         sidebarLayout(
+    #           
+    #           
+    #           sidebarPanel(
+    #             
+    #             
+    #             selectInput( "code93", "Select the ICD9 code", choices = c(
+    #               "-",
+    #               "INFECTIOUS AND PARASITIC DISEASES (001-139)" ="parasit",
+    #               "NEOPLASMS (140-239)" = "neoplasm",
+    #               "ENDOCRINE, NUTRITIONAL AND METABOLIC DISEASES, AND IMMUNITY DISORDERS (240-279)" = "endocrine",
+    #               "DISEASES OF THE BLOOD AND BLOOD-FORMING ORGANS (280-289)" = "blood",
+    #               "MENTAL DISORDERS (290-319)" = "mental",
+    #               "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)" = "nervous",
+    #               "DISEASES OF THE CIRCULATORY SYSTEM (390-459)" = "circulatory",
+    #               "DISEASES OF THE RESPIRATORY SYSTEM (460-519)" = "respiratory",
+    #               "DISEASES OF THE DIGESTIVE SYSTEM (520-579)" = "digestive",
+    #               "DISEASES OF THE GENITOURINARY SYSTEM (580-629)" = "genitourinary",
+    #               "COMPLICATIONS OF PREGNANCY, CHILDBIRTH, AND THE PUERPERIUM (630-679)" = "pregnancy",
+    #               "DISEASES OF THE SKIN AND SUBCUTANEOUS TISSUE (680-709)" = "skin",
+    #               "DISEASES OF THE MUSCULOSKELETAL SYSTEM AND CONNECTIVE TISSUE (710-739)" ="muscle",
+    #               "CONGENITAL ANOMALIES (740-759)" = "anomalies",
+    #               "CERTAIN CONDITIONS ORIGINATING IN THE PERINATAL PERIOD (760-779)" = "perinatal",
+    #               "SYMPTOMS, SIGNS, AND ILL-DEFINED CONDITIONS (780-799)" ="signs",
+    #               "INJURY AND POISONING (800-999)" ="poison",
+    #               "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)" ="v1",
+    #               "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)" = "v2"
+    #             ) 
+    #             ),
+    #             
+    #             width = 3
+    #             
+    #           ),
+    #           mainPanel(
+    #             box(
+    #               status = "primary",
+    #             DT::dataTableOutput("doentes"),
+    #             width = 9
+    #             )
+    #             
+    #             
+    #             
+    #             
+    #           ),
+    #           
+    #           
+    #           
+    #           
+    #         ), 
+    #         
+    #         
+    #         
+    # ), #fimpatients
     
     tabItem(tabName = "patients3",
             h4("Search by patient ID"),
             
             
-            sidebarLayout(
+            fluidRow(
               
               
-              sidebarPanel(
+              box(
+                status = "warning",
                 #selectInput("patid", "Patient ID: ", choices = PATIENTS$SUBJECT_ID, selected = NULL ),
                 #actionButton('buttonid2','Select'),
                 width = 2,
@@ -577,25 +583,16 @@ body <- dashboardBody(
               ),
               
               
-              
-              mainPanel(
+              box(
+                status = "primary",
                 
                 DT::dataTableOutput("patientid"),
                 #tableOutput("patient_id"),
-                width = 9,
-                
-                
-                
-                
-                
+                width = 10,
                 
               ),
               
-              
-              
-              
             ), 
-            
             
     ),
     
@@ -617,7 +614,7 @@ body <- dashboardBody(
             br(),
             fluidRow(
               box(
-                width = 10,status = "primary",
+                width = 12,status = "primary",
                 tabsetPanel(
                   id = 'dataset',
                   tabPanel("Admission type", DT::dataTableOutput("mytable1"), plotlyOutput("grafico1")),
@@ -641,6 +638,7 @@ body <- dashboardBody(
             h5("Search by admission ID to see more information about that particular admission:"),
             fluidRow(
               box(
+                status = "warning",
                 width = 2,
                 selectizeInput("admission_id_input", "Choose or type admission ID:", choices = NULL)
                 
@@ -648,9 +646,10 @@ body <- dashboardBody(
               
               
               box(
+                status = "primary",
                 DT::dataTableOutput("admission_table"),
                 #tableOutput("patient_id"),
-                width = 9,
+                width = 10,
               ),
               
               
@@ -669,16 +668,19 @@ body <- dashboardBody(
             fluidRow(
               column(  width = 12, 
                        box(
+                         status = "primary",
                          plotlyOutput("graficoICDS"),
                          # height = 10,
                        ),
                        box(
+                         status = "primary",
                          plotlyOutput("boxplotcompare"),
                          # height = 10,
                        ),
               ),
               
               box(
+                status = "warning",
                 h3("Select ICD9 code to see a summary:"),
                 width = 3,
                 selectInput( "code92", "Select the ICD9 code", choices = c(
@@ -709,7 +711,8 @@ body <- dashboardBody(
               ),
               
               box(
-                verbatimTextOutput("summary2"), width = 8,
+                status = "primary",
+                verbatimTextOutput("summary2"), width = 9,
               ),
               
               
@@ -721,6 +724,7 @@ body <- dashboardBody(
             h5("ICD-9 Codes -Diseases and Parasitic Diseases"),
             fluidRow(
               box(
+                status = "warning",
                 width = 3,
                 selectInput( "code9", "Select the ICD9 code", choices = c(
                   "INFECTIOUS AND PARASITIC DISEASES (001-139)" ="parasit",
@@ -750,12 +754,14 @@ body <- dashboardBody(
               
               
               box(
-                width = 11,
+                status = "primary",
+                width = 12,
                 plotlyOutput("icddiagnoses")
               ),
               
               box(
-                width = 11,
+                status = "primary",
+                width = 12,
                 
                 plotlyOutput("boxplot")
               )
@@ -767,14 +773,15 @@ body <- dashboardBody(
             h3("First Diagnoses  "),
             fluidRow(
               box(
+                status = "primary",
                 plotlyOutput("graficoICDS2"),
                 
               ),
               
               box(
-                title = "ICD-9 Codes Description", width = 4, solidHeader = TRUE,
+                title = "ICD-9 Codes Description", width = 6, solidHeader = TRUE,
                 status="success",
-                h3("Description of the ICD-9 codes:"),
+                
                 br(),
                 
                 HTML("<p>&nbsp;Infectious and parasitic diseases <strong>(001-139)</strong><br>Neoplasms <strong>(140-239)&nbsp;</strong><br>Endocrine, nutritional and metabolic diseases, and immunity disorders <strong>(240-279)</strong><br>Diseases of the blood and blood-forming organs <strong>(280-289)</strong></p>
@@ -793,6 +800,7 @@ body <- dashboardBody(
               
               
               box( 
+                status = "primary",
                 DT::dataTableOutput("firstseqcompare"),
                 width = 12,
                 
@@ -807,6 +815,7 @@ body <- dashboardBody(
             h5("Search by patient ID to see all diagnoses of that patient:"),
             fluidRow(
               box(
+                status = "warning",
                 width = 2,
                 selectizeInput("diagnose_patid", "Choose or type patient ID:", choices = NULL)
                 
@@ -814,9 +823,10 @@ body <- dashboardBody(
               
               
               box(
+                status = "primary",
                 DT::dataTableOutput("diagnose_patientid"),
                 #tableOutput("patient_id"),
-                width = 9,
+                width = 10,
               ),
               
               
@@ -828,6 +838,7 @@ body <- dashboardBody(
             h5("Search by ICD-9 code:"),
             fluidRow(
               box(
+                status = "warning",
                 width = 2,
                 selectizeInput("diagnose_icd", "Choose or type ICD:", choices = NULL)
                 
@@ -835,39 +846,41 @@ body <- dashboardBody(
               
               
               box(
+                status = "primary",
                 DT::dataTableOutput("diagnose_icdcode"),
                 #tableOutput("patient_id"),
-                width = 9,
+                width = 10,
               ),
               
               box(
+                # status = "primary",
                 verbatimTextOutput("summarydiagnoses5"),
-                width = 11,
+                width = 12,
                 
               )
               
               
               
             )
-    ),
+    )
     
     
     
     
-    tabItem(tabName = "search",
-            h5("Here you can make different kind of searches"),
-            sidebarLayout(
-              sidebarPanel (
-                selectInput( "inState", "Select a field to create histogram", choices = names(dfmerge) )
-              ),
-              
-              
-              mainPanel(
-                plotOutput("grafico")
-              )
-            )
-            
-    ) #fim search
+    # tabItem(tabName = "search",
+    #         h5("Here you can make different kind of searches"),
+    #         sidebarLayout(
+    #           sidebarPanel (
+    #             selectInput( "inState", "Select a field to create histogram", choices = names(dfmerge) )
+    #           ),
+    #           
+    #           
+    #           mainPanel(
+    #             plotOutput("grafico")
+    #           )
+    #         )
+    #         
+    # ) #fim search
   ) #fimtab items
   
   
@@ -956,7 +969,7 @@ server <- (function(input, output,session) {
         filter(ETHNICITY == input$in_ethnicity)
     }
   })
-
+  
   
   filtered_religion <- reactive({
     if(input$in_religion == "ALL"){
@@ -1731,7 +1744,7 @@ server <- (function(input, output,session) {
     
     if (input$code92 == "parasit"){
       
-      summary(temp1)
+      bug_solver
       
     } 
     else if (input$code92 == "neoplasm") {
@@ -2081,9 +2094,9 @@ server <- (function(input, output,session) {
   
   updateSelectizeInput(session, "patid", choices = PATIENTS$SUBJECT_ID, server = T, selected = "2")
   
-
   
- 
+  
+  
   
   # observeEvent(input$buttonid,
   #              {
@@ -2112,7 +2125,7 @@ server <- (function(input, output,session) {
   
   output$diagnose_patientid <- DT::renderDataTable({
     
-      
+    
     DT::datatable( filter( diagnoses_with_LOS, SUBJECT_ID == input$diagnose_patid), options = list(scrollX = TRUE) )
   })
   
