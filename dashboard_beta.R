@@ -343,6 +343,9 @@ colnames(firstseq_compare)[1] <- "SUBJECT_ID"
 # gato5 <- INPUTEVENTS_CV[13000001:17527935,]
 # write.csv(gato1,"gato5.csv")
 
+dfmerge2$SHORT_TITLE <- as.factor(dfmerge2$SHORT_TITLE)
+dfmerge2$LONG_TITLE <- as.factor(dfmerge2$LONG_TITLE)
+
 bug_solver <- summary(temp1)
 
 header <- dashboardHeader(title="MIMIC-III"
