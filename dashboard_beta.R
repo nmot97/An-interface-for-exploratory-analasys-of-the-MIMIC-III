@@ -256,6 +256,7 @@ dfmerge2$GENDER <- as.factor(dfmerge2$GENDER)
 dfmerge2$INSURANCE <- as.factor(dfmerge2$INSURANCE)
 dfmerge2$SHORT_TITLE <- as.factor(dfmerge2$SHORT_TITLE)
 dfmerge2$LONG_TITLE <- as.factor(dfmerge2$LONG_TITLE)
+dfmerge2 <- filter(dfmerge2, LOS < 176 )
 
 temp1 <-filter(dfmerge2, ICD9_CODE <= 1398)
 temp2 <- filter(dfmerge2, ICD9_CODE >= 1400 , ICD9_CODE <= 2399)
@@ -361,6 +362,10 @@ bug_solver <- summary(temp1)
 ICUcomplete <- left_join(ICUSTAYS, df[,c("age","SUBJECT_ID", "GENDER","ETHNICITY","EXPIRE_FLAG","HOSPITAL_EXPIRE_FLAG")], 
                   by = "SUBJECT_ID")
 
+ICUcomplete <- subset(ICUcomplete, select= -c(1))
+  
+
+
 header <- dashboardHeader(title="MIMIC-III"
 )
 
@@ -448,6 +453,18 @@ body <- dashboardBody(
                 
                 status = "primary",
                 plotlyOutput("age_graph")
+              ),
+              
+              box(
+               
+                status = "primary",
+                plotlyOutput("piegender")
+              ),
+              
+              box(
+                
+                status = "primary",
+                plotlyOutput("pieethnicity")
               )
               
             )
@@ -884,6 +901,11 @@ body <- dashboardBody(
                   DT::dataTableOutput("icutable"),
                   width = 14,
                 ),
+                
+                box(
+                  plotlyOutput("icugrafico"),
+                  width = 9,
+                )
                 
                 
                 
@@ -2316,6 +2338,44 @@ server <- (function(input, output,session) {
     DT::datatable(  filter( subset(ADMISSIONS, select = -c(ROW_ID)) , HADM_ID == input$admission_id_input), options = list(scrollX = TRUE) )
   })
   
+  output$icugrafico <-  renderPlotly({
+    plot_ly(
+      data = fully_filtered2(),
+      y = ~LOS,
+      type = "box",
+      name = "Length of stay"
+    ) %>%
+      layout(title= "BoxPlot of LOS selected"
+             
+      )
+    
+    
+    
+  })
+  
+  output$piegender <-  renderPlotly({
+    plot_ly(
+      count(df, GENDER),values=~n,labels=~factor(GENDER),
+            marker=list(colors=c("#89CFF0","#1B6AA1")),type="pie") %>%
+      layout(title= "Gender distribuiton"
+             
+             
+      )
+    
+    
+  })
+  output$pieethnicity <-  renderPlotly({
+    plot_ly(
+      count(df, ETHNICITY),values=~n,labels=~factor(ETHNICITY)
+      ,type="pie") %>%
+      layout(title= "Ethnicity distribuiton"
+             
+             
+      )
+    
+    
+  })
+
   
   
   
