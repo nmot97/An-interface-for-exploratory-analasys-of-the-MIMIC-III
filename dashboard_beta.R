@@ -154,8 +154,17 @@ xpto9 <- c("ALL", xpto9)
 xpto10 <- unique( as.character(dfmerge$EXPIRE_FLAG))
 xpto10 <- c("ALL", xpto10)
 
+xpto11 <- unique( as.character(ICUSTAYS$FIRST_CAREUNIT))
+xpto11 <- c("ALL", xpto11)
 
+xpto12 <- unique( as.character(ICUSTAYS$LAST_CAREUNIT))
+xpto12 <- c("ALL", xpto12)
 
+xpto13 <- unique( as.character(ICUSTAYS$FIRST_WARDID))
+xpto13 <- c("ALL", xpto13)
+
+xpto14 <- unique( as.character(ICUSTAYS$LAST_WARDID))
+xpto14 <- c("ALL", xpto14)
 
 
 #dfmerge$len_stay <- age_calc(dfmerge$ADMITTIME, dfmerge$DISCHTIME, units = "days",precise = FALSE)
@@ -348,6 +357,10 @@ dfmerge2$LONG_TITLE <- as.factor(dfmerge2$LONG_TITLE)
 
 bug_solver <- summary(temp1)
 
+
+ICUcomplete <- left_join(ICUSTAYS, df[,c("age","SUBJECT_ID", "GENDER","ETHNICITY","EXPIRE_FLAG","HOSPITAL_EXPIRE_FLAG")], 
+                  by = "SUBJECT_ID")
+
 header <- dashboardHeader(title="MIMIC-III"
 )
 
@@ -375,6 +388,7 @@ sidebar <- dashboardSidebar(
              
              menuSubItem("Search by admission ID",
                          tabName = "admissions1")
+             
     ),
     
     menuItem("Diagnoses", tabName = "diagnoses", icon = icon("stethoscope"),
@@ -389,6 +403,14 @@ sidebar <- dashboardSidebar(
                          tabName = "diagnoses3"),
              menuSubItem("Diagnoses search by patient ID",
                          tabName = "diagnoses4")
+    ),
+    
+    menuItem("ICU", tabName = "icu", icon = icon("bed"),
+             startExpanded = FALSE,
+             menuSubItem(" General ICU stays Info",
+                         tabName = "icu1")
+
+
     )
   )
 )
@@ -514,61 +536,7 @@ body <- dashboardBody(
             
     ), #fimpatients
     
-    # tabItem(tabName = "patients2",
-    #         h4("Filter to find general info about patients"),
-    #         sidebarLayout(
-    #           
-    #           
-    #           sidebarPanel(
-    #             
-    #             
-    #             selectInput( "code93", "Select the ICD9 code", choices = c(
-    #               "-",
-    #               "INFECTIOUS AND PARASITIC DISEASES (001-139)" ="parasit",
-    #               "NEOPLASMS (140-239)" = "neoplasm",
-    #               "ENDOCRINE, NUTRITIONAL AND METABOLIC DISEASES, AND IMMUNITY DISORDERS (240-279)" = "endocrine",
-    #               "DISEASES OF THE BLOOD AND BLOOD-FORMING ORGANS (280-289)" = "blood",
-    #               "MENTAL DISORDERS (290-319)" = "mental",
-    #               "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)" = "nervous",
-    #               "DISEASES OF THE CIRCULATORY SYSTEM (390-459)" = "circulatory",
-    #               "DISEASES OF THE RESPIRATORY SYSTEM (460-519)" = "respiratory",
-    #               "DISEASES OF THE DIGESTIVE SYSTEM (520-579)" = "digestive",
-    #               "DISEASES OF THE GENITOURINARY SYSTEM (580-629)" = "genitourinary",
-    #               "COMPLICATIONS OF PREGNANCY, CHILDBIRTH, AND THE PUERPERIUM (630-679)" = "pregnancy",
-    #               "DISEASES OF THE SKIN AND SUBCUTANEOUS TISSUE (680-709)" = "skin",
-    #               "DISEASES OF THE MUSCULOSKELETAL SYSTEM AND CONNECTIVE TISSUE (710-739)" ="muscle",
-    #               "CONGENITAL ANOMALIES (740-759)" = "anomalies",
-    #               "CERTAIN CONDITIONS ORIGINATING IN THE PERINATAL PERIOD (760-779)" = "perinatal",
-    #               "SYMPTOMS, SIGNS, AND ILL-DEFINED CONDITIONS (780-799)" ="signs",
-    #               "INJURY AND POISONING (800-999)" ="poison",
-    #               "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)" ="v1",
-    #               "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)" = "v2"
-    #             ) 
-    #             ),
-    #             
-    #             width = 3
-    #             
-    #           ),
-    #           mainPanel(
-    #             box(
-    #               status = "primary",
-    #             DT::dataTableOutput("doentes"),
-    #             width = 9
-    #             )
-    #             
-    #             
-    #             
-    #             
-    #           ),
-    #           
-    #           
-    #           
-    #           
-    #         ), 
-    #         
-    #         
-    #         
-    # ), #fimpatients
+   
     
     tabItem(tabName = "patients3",
             h4("Search by patient ID"),
@@ -600,15 +568,7 @@ body <- dashboardBody(
     ),
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+ 
     
     tabItem(tabName = "admissions2",
             h3("Details of every patient admission on the hospital"),
@@ -622,7 +582,7 @@ body <- dashboardBody(
                   id = 'dataset',
                   tabPanel("Admission type", DT::dataTableOutput("mytable1"), plotlyOutput("grafico1")),
                   tabPanel("Admission location", DT::dataTableOutput("mytable2"), plotlyOutput("grafico2")),
-                  tabPanel("Dischard location", DT::dataTableOutput("mytable3"),  plotlyOutput("grafico3")),
+                  tabPanel("Discharge location", DT::dataTableOutput("mytable3"),  plotlyOutput("grafico3")),
                   tabPanel("Insurance", DT::dataTableOutput("mytable4"),  plotlyOutput("grafico4")),
                   tabPanel("Diagnosis", DT::dataTableOutput("mytable5"),  plotlyOutput("grafico5")),
                 ),
@@ -661,10 +621,7 @@ body <- dashboardBody(
     ),
     
     
-    
-    
-    
-    
+
     
     tabItem(tabName = "diagnoses1",
             h3("General view of the ICD-9 Codes"),
@@ -865,25 +822,81 @@ body <- dashboardBody(
               
               
             )
+    ),
+    
+    tabItem(tabName ="icu1",
+            h4("Filter to find general icu info:"),
+            
+            
+            sidebarLayout(
+              
+              
+              sidebarPanel(
+                
+                
+                
+                selectInput(inputId = "in_gender2",
+                            label = "Choose a gender:",
+                            choices = xpto),
+                
+                selectInput(inputId = "in_ethnicity2",
+                            label = "Choose an ethnicity:",
+                            choices = xpto2 ),
+                selectInput(inputId = "in_hospex2",
+                            label = "Choose if alive(1) or dead(0) [Hospital expire flag]:",
+                            choices = xpto8 ),
+                selectInput(inputId = "in_dead2",
+                            label = "Choose if alive(1) or dead(0) [Expire flag]:",
+                            choices = xpto10 ),
+                selectInput(inputId = "in_funit",
+                            label = "Choose the first care unit:",
+                            choices = xpto11 ),
+                selectInput(inputId = "in_lunit",
+                            label = "Choose the last care unit:",
+                            choices = xpto12),
+                selectInput(inputId = "in_fward",
+                            label = "Choose the first ward id:",
+                            choices = xpto13 ),
+                selectInput(inputId = "in_lward",
+                            label = "Choose the last ward id:",
+                            choices = xpto14 ),
+                sliderInput( inputId = "in_los",
+                             label = "LOS", min = -1, max = 174,
+                             value = c(-1,-1)
+                ),
+                sliderInput( inputId = "in_age2",
+                             label = "Age", min = -1, max = 300,
+                             value = c(-1,-1)
+                ),
+                print("Select -1 to not select age"),
+                
+                
+                print("Select -1 to not filter by LOS"),
+                
+                actionButton('select2', 'Select'),
+                width = 3
+                
+              ),
+              mainPanel(
+                width = 9,
+                box(
+                  status = "primary",
+                  DT::dataTableOutput("icutable"),
+                  width = 14,
+                ),
+                
+                
+                
+              ),
+              
+              
+              
+              
+            ), 
+            
     )
     
-    
-    
-    
-    # tabItem(tabName = "search",
-    #         h5("Here you can make different kind of searches"),
-    #         sidebarLayout(
-    #           sidebarPanel (
-    #             selectInput( "inState", "Select a field to create histogram", choices = names(dfmerge) )
-    #           ),
-    #           
-    #           
-    #           mainPanel(
-    #             plotOutput("grafico")
-    #           )
-    #         )
-    #         
-    # ) #fim search
+  
   ) #fimtab items
   
   
@@ -953,7 +966,7 @@ server <- (function(input, output,session) {
   )
   
   
-  
+  ## PATIENTS ######################################################################
   
   filtered_gender <- reactive({
     if(input$in_gender == "ALL"){
@@ -1070,6 +1083,150 @@ server <- (function(input, output,session) {
     
     summary(fully_filtered())
   })
+  
+  
+  
+  
+  
+  ## FIM PATIENTS #################################################
+  
+  
+  ## INICIO ICU ###################################################
+  
+  
+  filtered_gender2 <- reactive({
+    if(input$in_gender2 == "ALL"){
+      ICUcomplete
+    } else {
+      ICUcomplete %>% 
+        filter(GENDER == input$in_gender2)
+    }
+  })
+  
+  filtered_ethnicity2 <- reactive({
+    if(input$in_ethnicity2 == "ALL"){
+      filtered_gender2()
+    } else {
+      filtered_gender2() %>% 
+        filter(ETHNICITY == input$in_ethnicity2)
+    }
+  })
+ 
+  
+  filtered_age2 <- reactive({
+    if(input$in_age2 == "-1" ){
+      filtered_ethnicity2()
+    }
+    else{
+      filtered_ethnicity2() %>% 
+        filter( age >= input$in_age2[1] & age <= input$in_age2[2])
+    }
+  })
+  
+  
+  
+  
+  
+  filtered_los <- reactive({
+    if(input$in_los == "-1" ){
+      filtered_age2()
+    }
+    else{
+      filtered_age2() %>%
+        filter( LOS >= input$in_los[1] & LOS <= input$in_los[2])
+    }
+  })
+
+
+  
+  filtered_hospex2 <- reactive({
+    if(input$in_hospex2 == "ALL"){
+      filtered_los()
+    } else {
+      filtered_los() %>% 
+        filter(HOSPITAL_EXPIRE_FLAG == input$in_hospex2)
+    }
+  })
+  
+
+  filtered_dead2 <- reactive({
+    if(input$in_dead2 == "ALL"){
+      filtered_hospex2()
+    } else {
+      filtered_hospex2() %>% 
+        filter(EXPIRE_FLAG == input$in_dead2)
+    }
+  })
+  
+  filtered_funit <- reactive({
+    if(input$in_funit == "ALL"){
+      filtered_dead2()
+    } else {
+      filtered_dead2() %>% 
+        filter(FIRST_CAREUNIT == input$in_funit)
+    }
+  })
+  
+  
+  filtered_lunit <- reactive({
+    if(input$in_lunit == "ALL"){
+      filtered_funit()
+    } else {
+      filtered_funit() %>% 
+        filter(LAST_CAREUNIT == input$in_lunit)
+    }
+  })
+  
+  filtered_fward <- reactive({
+    if(input$in_fward == "ALL"){
+      filtered_lunit()
+    } else {
+      filtered_lunit() %>% 
+        filter(FIRST_WARDID == input$in_fward)
+    }
+  })
+  
+  filtered_lward <- reactive({
+    if(input$in_lward == "ALL"){
+      filtered_fward()
+    } else {
+      filtered_fward() %>% 
+        filter(LAST_WARDID == input$in_laward)
+    }
+  })
+  
+  
+  
+  
+  fully_filtered2 <- eventReactive(input$select2, {
+    filtered_lward()
+  })
+  
+  
+  
+  
+  output$icutable <- DT::renderDataTable({
+    DT::datatable(fully_filtered2(),options = list(scrollX = TRUE) )
+  })
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  ## FIM ICU #######################################################
+  
   
   output$tabelinha <- DT::renderDataTable({
     DT::datatable(fully_filtered(),options = list(scrollX = TRUE) )
