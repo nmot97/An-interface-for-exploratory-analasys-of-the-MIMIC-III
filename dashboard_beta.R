@@ -527,7 +527,9 @@ body <- dashboardBody(
                 print("Select -1 to not select age"),
                 
                 actionButton('select', 'Select'),
-                width = 3
+                width = 3,
+                
+                downloadButton('download',"Download the data"),
                 
               ),
               mainPanel(
@@ -886,12 +888,14 @@ body <- dashboardBody(
                              value = c(-1,-1)
                 ),
                 print("Select -1 to not select age"),
-                
+                br(),
                 
                 print("Select -1 to not filter by LOS"),
                 
                 actionButton('select2', 'Select'),
-                width = 3
+                width = 3,
+                
+                downloadButton('download2',"Download the data"),
                 
               ),
               mainPanel(
@@ -1098,7 +1102,12 @@ server <- (function(input, output,session) {
     filtered_dead()
   })
   
-  
+  output$download <- downloadHandler(
+    filename = function(){"data.csv"}, 
+    content = function(fname){
+      write.csv(fully_filtered(), fname)
+    }
+  )
   
   
   output$summary <- renderPrint({
@@ -1213,7 +1222,7 @@ server <- (function(input, output,session) {
       filtered_fward()
     } else {
       filtered_fward() %>% 
-        filter(LAST_WARDID == input$in_laward)
+        filter(LAST_WARDID == input$in_lward)
     }
   })
   
@@ -1225,6 +1234,12 @@ server <- (function(input, output,session) {
   })
   
   
+  output$download2 <- downloadHandler(
+    filename = function(){"data.csv"}, 
+    content = function(fname){
+      write.csv(fully_filtered2(), fname)
+    }
+  )
   
   
   output$icutable <- DT::renderDataTable({
