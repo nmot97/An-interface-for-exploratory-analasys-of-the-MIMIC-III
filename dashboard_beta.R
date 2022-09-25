@@ -53,7 +53,7 @@ males <- sum(PATIENTS$GENDER == 'M')
 females<- sum(PATIENTS$GENDER == 'F')
 
 percMales <- males/length(PATIENTS$GENDER)
-percMales <- round( percMales, 3)
+percMales <- round( percMales, 3) *100
 
 #numero de mortes 
 n_deaths <- sum( is.na(PATIENTS$DOD))
@@ -228,6 +228,20 @@ Frequency2 <- c(nrow(infections139_2), nrow(neoplasms239_2), nrow(endocrine279_2
 
 
 diagnosesPlot <- data.frame(ICD9CODE, Frequency)
+
+
+
+a <- c("0-139", "140-239", "240-279", "280-289", "290-319", "320-389",
+       "390-459", "460-519", "520-579","580-629","630-679","680-709","710-739",
+       "740-759","760-779", "780-799", "800-999","V01-V091","E000-E999"
+)
+
+Frequency2 <- c(nrow(infections139_2), nrow(neoplasms239_2), nrow(endocrine279_2), nrow(blood289_2), nrow(mental319_2),
+                nrow(nervous389_2), nrow(circulatory459_2), nrow(respiratory519_2), nrow(digestive579_2), nrow(genitourinary629_2),
+                nrow(pregnancy679_2), nrow(skin709_2), nrow(muscle739_2), nrow(congenital759_2), nrow(perinatal779_2), nrow(symptoms799_2),
+                nrow(injury999_2), nrow(v_2), nrow(e_2)
+)
+
 diagnosesPlot2 <- data.frame(a, Frequency2)
 diagnosesPlot<- diagnosesPlot[order(diagnosesPlot$ICD9CODE),]
 diagnosesPlot2<- diagnosesPlot2[order(diagnosesPlot2$a),]
@@ -605,15 +619,24 @@ body <- dashboardBody(
                 selectizeInput("patid", "Choose or type patient ID:", choices = NULL)
               ),
               
-              
-              box(
-                status = "primary",
+             column(12,
+                box(
+                  status = "primary",
+                  title = "Patient info",
+                  DT::dataTableOutput("patientid"),
+                  #tableOutput("patient_id"),
+                  width = 12,
+                  
+                ),
                 
-                DT::dataTableOutput("patientid"),
-                #tableOutput("patient_id"),
-                width = 10,
-                
-              ),
+                box(
+                  
+                  status = "primary",
+                  title = "All admissions of patient",
+                  DT::dataTableOutput("adms_each_patient"),
+                  width=12,
+                )
+             )
               
             ), 
             
@@ -2387,21 +2410,27 @@ server <- (function(input, output,session) {
   
   output$diagnose_patientid <- DT::renderDataTable({
     
+   temporario3 <- filter( diagnoses_with_LOS, SUBJECT_ID == input$diagnose_patid)
+   temporario3 <- subset (temporario3, select= -c(2))
     
-    DT::datatable( filter( diagnoses_with_LOS, SUBJECT_ID == input$diagnose_patid), options = list(scrollX = TRUE) )
+    DT::datatable( temporario3, options = list(scrollX = TRUE) )
   })
   
   output$diagnose_icdcode <- DT::renderDataTable({
     
-    
-    DT::datatable( filter( diagnoses_with_LOS, ICD9_CODE == input$diagnose_icd), options = list(scrollX = TRUE) )
+   temporario2 <-  filter( diagnoses_with_LOS, ICD9_CODE == input$diagnose_icd)
+   temporario2 <- subset (temporario2, select= -c(2))
+   
+    DT::datatable( temporario2, options = list(scrollX = TRUE) )
   })
   
   
   output$summarydiagnoses5 <- renderPrint({
+    
     temporario <- left_join(diagnoses_with_LOS, dfmerge3, by = "SUBJECT_ID")
     temporario <- subset (temporario, select= -c(HADM_ID.y))
     summary(filter(temporario,ICD9_CODE == input$diagnose_icd) )
+    
   })
   
   output$firstseqcompare <- DT::renderDataTable({
@@ -2476,6 +2505,15 @@ server <- (function(input, output,session) {
     
   })
   
+  output$adms_each_patient <- DT::renderDataTable({
+    temporario <- filter( ADMISSIONS, SUBJECT_ID == input$patid)
+    temporario <- subset(temporario, select = -c(1))
+    DT::datatable( temporario, options = list(scrollX = TRUE) )
+  })
+  
+  
+  
+ 
   
   
   
