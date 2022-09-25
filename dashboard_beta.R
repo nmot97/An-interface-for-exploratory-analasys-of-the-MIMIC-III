@@ -64,7 +64,7 @@ PATIENTS$DOD_HOSP <- gsub(PATIENTS$DOD_HOSP,pattern=" 00:00:00",replacement="",f
 PATIENTS$DOD_SSN <- gsub(PATIENTS$DOD_SSN,pattern=" 00:00:00",replacement="",fixed=T)
 
 
-ADMISSIONS_unique <- ADMISSIONS %>% distinct(SUBJECT_ID, .keep_all = TRUE) ## remover rows com duplicados baseado no id
+ADMISSIONS_unique <- ADMISSIONS[!rev(duplicated(rev(ADMISSIONS$SUBJECT_ID))),] ## remover rows com duplicados baseado no id
 df = merge(x=ADMISSIONS_unique,y=PATIENTS,by="SUBJECT_ID")
 #View(df)
 
@@ -173,7 +173,7 @@ xpto14 <- c("ALL", xpto14)
 
 #mortalitysum(!is.na(dfmerge$DOD))
 
-tempage <- filter(dfmerge, age <300 | age> 0 )
+tempage <- filter(df, age <300 | age>= 0 )
 average_age <- mean(tempage$age)
 
 dfmerge$GENDER <- as.factor(dfmerge$GENDER)
@@ -334,7 +334,7 @@ v_2 <- firstseq_num  %>% filter(str_detect(ICD9_CODE, "^V"))
 e_2 <- firstseq_num %>% filter(str_detect(ICD9_CODE, "^E"))
 
 
-x1 <- count(filter(PATIENTS, EXPIRE_FLAG == "1"))/46520
+x1 <- count(filter(ADMISSIONS_unique, HOSPITAL_EXPIRE_FLAG == "1"))/46520
 
 # t.first <- ADMISSIONS[match(unique(ADMISSIONS$SUBJECT_ID), ADMISSIONS$SUBJECT_ID),]
 
@@ -473,7 +473,7 @@ body <- dashboardBody(
                 HTML('<b> ICU length of stay, average days:</b>'), print( round(mean(ICUSTAYS$LOS, na.rm =  TRUE),3) ), HTML('</br>'),
                 #HTML('<b> Hospital length of stay, average days:</b> 6.9 <br>'),
                 #HTML('<b> ICU Mortality, %:</b> 8.5 <br>'),
-                HTML('<b> Hospital mortality,% :</b>'), print(round(x1,3)), HTML('</br>'),
+                HTML('<b> Hospital mortality,% :</b>'), print(round(x1*100,3)), HTML('</br>'),
               ),
               
               box(
@@ -1006,7 +1006,8 @@ server <- (function(input, output,session) {
       type = "histogram"
     ) %>%
       layout(title= "Histogram of Length of Stay", 
-             xaxis= list(title = "Days" )
+             xaxis= list(title = "Days" ),
+             yaxis= list(title = "Frequency")
       )
     
     
@@ -1014,12 +1015,13 @@ server <- (function(input, output,session) {
   
   output$age_graph <- renderPlotly({
     plot_ly(
-      data = filter(dfmerge, age <300 & age > 0),
+      data = filter(df, age <300 & age > 0),
       x = ~age,
       type="histogram"
     ) %>%
       layout(title= "Histogram of age", 
-             xaxis= list(title = "Years" )
+             xaxis= list(title = "Years" ),
+             yaxis= list(title = "Frequency")
              
       )
   })
@@ -1318,7 +1320,8 @@ server <- (function(input, output,session) {
       type="histogram"
     ) %>%
       layout(title= "Admission Type " ,
-             xaxis= list(title = "Type" )
+             xaxis= list(title = "Type" ),
+             yaxis= list(title = "Frequency")
              
       )
   })
@@ -1334,7 +1337,9 @@ server <- (function(input, output,session) {
       type="histogram"
     ) %>%
       layout(title= "Admission Location " ,
-             xaxis= list(title = "Location" )
+             xaxis= list(title = "Location" ),
+             yaxis= list(title = "Frequency")
+             
              
       )
   })
@@ -1350,7 +1355,8 @@ server <- (function(input, output,session) {
       type="histogram"
     ) %>%
       layout(title= "Discharge Location " ,
-             xaxis= list(title = "Location" )
+             xaxis= list(title = "Location" ),
+             yaxis= list(title = "Frequency")
              
       ) 
   })
@@ -1367,7 +1373,8 @@ server <- (function(input, output,session) {
     ) %>%
       layout(title= "Insurance " ,
              xaxis= list(title = "Insurance" ,
-                         categoryorder = "total descending")
+                         categoryorder = "total descending"),
+             yaxis= list(title = "Frequency")
              
       )
   })
@@ -1416,7 +1423,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "001-139"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
       
@@ -1428,7 +1436,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "140-239"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
       
@@ -1440,7 +1449,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "240-279"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
       
@@ -1454,7 +1464,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "280-289"
       ) %>%
-      layout(title= "Length of stay"
+      layout(title= "Length of stay",
+             yaxis= list(title = "Days"  )
              
       )
     
@@ -1467,7 +1478,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "290-319"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
       
@@ -1480,7 +1492,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "320-389"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
       
@@ -1493,7 +1506,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "390-459"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
       
@@ -1505,7 +1519,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "460-519"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
     }
@@ -1517,7 +1532,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "520-579"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
     }
@@ -1529,7 +1545,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "580-629"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
     }
@@ -1541,7 +1558,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "630-679"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
       
@@ -1554,7 +1572,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "680-709"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
       
@@ -1567,7 +1586,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "710-739"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
     }
@@ -1579,7 +1599,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "740-759"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
     }
@@ -1591,7 +1612,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "760-779"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
     }
@@ -1603,7 +1625,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "780-799"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
     }
@@ -1615,7 +1638,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "800-999"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
       
@@ -1629,7 +1653,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "V01-V89"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
     }
@@ -1641,7 +1666,8 @@ server <- (function(input, output,session) {
         type = "box",
         name = "E800-E999"
       ) %>%
-        layout(title= "Length of stay"
+        layout(title= "Length of stay",
+               yaxis= list(title = "Days"  )
                
         )
     }
@@ -2320,7 +2346,8 @@ server <- (function(input, output,session) {
       hoverinfo = "text",
       hovertext = paste("IC9-Code:", diagnosesPlot2$a)
     ) %>%
-      layout(title= "Frequency of each ICD9 code"
+      layout(title= "Frequency of each ICD9 code",
+             yaxis= list(title = "Days")
              
       )
     
