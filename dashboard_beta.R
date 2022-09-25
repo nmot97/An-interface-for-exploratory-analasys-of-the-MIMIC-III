@@ -231,17 +231,6 @@ diagnosesPlot <- data.frame(ICD9CODE, Frequency)
 
 
 
-a <- c("0-139", "140-239", "240-279", "280-289", "290-319", "320-389",
-       "390-459", "460-519", "520-579","580-629","630-679","680-709","710-739",
-       "740-759","760-779", "780-799", "800-999","V01-V091","E000-E999"
-)
-
-Frequency2 <- c(nrow(infections139_2), nrow(neoplasms239_2), nrow(endocrine279_2), nrow(blood289_2), nrow(mental319_2),
-                nrow(nervous389_2), nrow(circulatory459_2), nrow(respiratory519_2), nrow(digestive579_2), nrow(genitourinary629_2),
-                nrow(pregnancy679_2), nrow(skin709_2), nrow(muscle739_2), nrow(congenital759_2), nrow(perinatal779_2), nrow(symptoms799_2),
-                nrow(injury999_2), nrow(v_2), nrow(e_2)
-)
-
 diagnosesPlot2 <- data.frame(a, Frequency2)
 diagnosesPlot<- diagnosesPlot[order(diagnosesPlot$ICD9CODE),]
 diagnosesPlot2<- diagnosesPlot2[order(diagnosesPlot2$a),]
@@ -413,6 +402,9 @@ most_freq_icd <- most_freq_icd[order(-most_freq_icd$n),]
 most_freq_icd <- head(most_freq_icd,10)
 most_freq_icd <- left_join(most_freq_icd, D_ICD_DIAGNOSES, by = "ICD9_CODE")
 
+days_before_death <- filter(df, EXPIRE_FLAG == "1"  & (HOSPITAL_EXPIRE_FLAG == "0" & DOD_HOSP == "")) #para casos onde hospital expire flag esta mal
+days_before_death$days<- difftime( days_before_death$DOD, days_before_death$DISCHTIME , units = c("days"))
+
 header <- dashboardHeader(title="MIMIC-III"
 )
 
@@ -491,6 +483,23 @@ body <- dashboardBody(
               ),
               
               box(
+                title = "Welcome to the MIMIC Explorer Tool", width = 5, solidHeader = TRUE,
+                status="success",
+                
+                br(),
+               HTML("This dashboard allows to explore the MIMIC-III Database without needing some sort of programming skills. 
+
+The tool is divided on 4 side main menus, each one giving you different functions.  The data is displayed with the help of tables, graphs and text. In menus where data is filtered and subseted by the user, the option to download it to the user machine is available."),
+                
+                
+                
+                
+                
+                
+                
+              ),
+              
+              box(
                 
                 status = "primary",
                 plotlyOutput("los_graph")
@@ -512,8 +521,19 @@ body <- dashboardBody(
                 
                 status = "primary",
                 plotlyOutput("pieethnicity")
-              )
+              ),
               
+              box(
+                
+                status = "primary",
+                plotlyOutput("agemortality")
+              ),
+              
+              box(
+                
+                status = "primary",
+                plotlyOutput("etmortality")
+              )
             )
             
             
@@ -753,42 +773,45 @@ body <- dashboardBody(
                          status = "primary",
                          plotlyOutput("mostfreqicd"),
                        ),
+                       
+                       box(
+                         status = "warning",
+                         h3("Select ICD9 code to see a summary:"),
+                         # width = 3,
+                         selectInput( "code92", "Select the ICD9 code", choices = c(
+                           "-",
+                           "INFECTIOUS AND PARASITIC DISEASES (001-139)" ="parasit",
+                           "NEOPLASMS (140-239)" = "neoplasm",
+                           "ENDOCRINE, NUTRITIONAL AND METABOLIC DISEASES, AND IMMUNITY DISORDERS (240-279)" = "endocrine",
+                           "DISEASES OF THE BLOOD AND BLOOD-FORMING ORGANS (280-289)" = "blood",
+                           "MENTAL DISORDERS (290-319)" = "mental",
+                           "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)" = "nervous",
+                           "DISEASES OF THE CIRCULATORY SYSTEM (390-459)" = "circulatory",
+                           "DISEASES OF THE RESPIRATORY SYSTEM (460-519)" = "respiratory",
+                           "DISEASES OF THE DIGESTIVE SYSTEM (520-579)" = "digestive",
+                           "DISEASES OF THE GENITOURINARY SYSTEM (580-629)" = "genitourinary",
+                           "COMPLICATIONS OF PREGNANCY, CHILDBIRTH, AND THE PUERPERIUM (630-679)" = "pregnancy",
+                           "DISEASES OF THE SKIN AND SUBCUTANEOUS TISSUE (680-709)" = "skin",
+                           "DISEASES OF THE MUSCULOSKELETAL SYSTEM AND CONNECTIVE TISSUE (710-739)" ="muscle",
+                           "CONGENITAL ANOMALIES (740-759)" = "anomalies",
+                           "CERTAIN CONDITIONS ORIGINATING IN THE PERINATAL PERIOD (760-779)" = "perinatal",
+                           "SYMPTOMS, SIGNS, AND ILL-DEFINED CONDITIONS (780-799)" ="signs",
+                           "INJURY AND POISONING (800-999)" ="poison",
+                           "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)" ="v1",
+                           "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)" = "v2"
+                           
+                           
+                         ) 
+                         )
+                       ),
+           
               ),
               
-              box(
-                status = "warning",
-                h3("Select ICD9 code to see a summary:"),
-                width = 3,
-                selectInput( "code92", "Select the ICD9 code", choices = c(
-                  "-",
-                  "INFECTIOUS AND PARASITIC DISEASES (001-139)" ="parasit",
-                  "NEOPLASMS (140-239)" = "neoplasm",
-                  "ENDOCRINE, NUTRITIONAL AND METABOLIC DISEASES, AND IMMUNITY DISORDERS (240-279)" = "endocrine",
-                  "DISEASES OF THE BLOOD AND BLOOD-FORMING ORGANS (280-289)" = "blood",
-                  "MENTAL DISORDERS (290-319)" = "mental",
-                  "DISEASES OF THE NERVOUS SYSTEM AND SENSE ORGANS (320-389)" = "nervous",
-                  "DISEASES OF THE CIRCULATORY SYSTEM (390-459)" = "circulatory",
-                  "DISEASES OF THE RESPIRATORY SYSTEM (460-519)" = "respiratory",
-                  "DISEASES OF THE DIGESTIVE SYSTEM (520-579)" = "digestive",
-                  "DISEASES OF THE GENITOURINARY SYSTEM (580-629)" = "genitourinary",
-                  "COMPLICATIONS OF PREGNANCY, CHILDBIRTH, AND THE PUERPERIUM (630-679)" = "pregnancy",
-                  "DISEASES OF THE SKIN AND SUBCUTANEOUS TISSUE (680-709)" = "skin",
-                  "DISEASES OF THE MUSCULOSKELETAL SYSTEM AND CONNECTIVE TISSUE (710-739)" ="muscle",
-                  "CONGENITAL ANOMALIES (740-759)" = "anomalies",
-                  "CERTAIN CONDITIONS ORIGINATING IN THE PERINATAL PERIOD (760-779)" = "perinatal",
-                  "SYMPTOMS, SIGNS, AND ILL-DEFINED CONDITIONS (780-799)" ="signs",
-                  "INJURY AND POISONING (800-999)" ="poison",
-                  "SUPPLEMENTARY CLASSIFICATION OF FACTORS INFLUENCING HEALTH STATUS AND CONTACT WITH HEALTH SERVICES (V01-V89)" ="v1",
-                  "SUPPLEMENTARY CLASSIFICATION OF EXTERNAL CAUSES OF INJURY AND POISONING (E800-E999)" = "v2"
-                  
-                  
-                ) 
-                )
-              ),
+              
               
               box(
                 status = "primary",
-                verbatimTextOutput("summary2"), width = 9,
+                verbatimTextOutput("summary2"), width = 12,
               ),
               
               
@@ -2408,7 +2431,8 @@ server <- (function(input, output,session) {
       type = "box",
       name="E800-E999"
       
-    )
+    )%>%
+      layout(yaxis= list(title = "Days"))
     
   })
   
@@ -2659,6 +2683,34 @@ server <- (function(input, output,session) {
       count(fully_filtered(), DISCHARGE_LOCATION),values=~n,labels=~factor(DISCHARGE_LOCATION)
       ,type="pie") %>%
       layout(title= "Admission Location"
+             
+      )
+    
+  })
+  
+  
+  output$agemortality <- renderPlotly({
+    plot_ly(
+      data = filter(df, HOSPITAL_EXPIRE_FLAG == "1"),
+      x = ~age,
+      type = "histogram"
+    ) %>%
+      layout(title= "Histogram of Mortality in hospital by age, including people over 89 years", 
+             xaxis= list(title = "Age Range" ),
+             yaxis= list(title = "Frequency")
+      )
+    
+    
+  })
+  
+  
+  output$etmortality <-  renderPlotly({
+    
+    
+    plot_ly(
+      count(filter(df, HOSPITAL_EXPIRE_FLAG == "1"), ETHNICITY),values=~n,labels=~factor(ETHNICITY)
+      ,type="pie") %>%
+      layout(title= "Mortality in hospital by Ethnicity"
              
       )
     
