@@ -591,6 +591,42 @@ body <- dashboardBody(
                   width = 14,
                 ),
                 
+                box(
+                  status = "primary",
+                  plotlyOutput("patgender"),
+                  width = 6,
+                ),
+                
+                box(
+                  status = "primary",
+                  plotlyOutput("patage"),
+                  width = 6,
+                ),
+                
+                box(
+                  status = "primary",
+                  plotlyOutput("patadmitype"),
+                  width = 6,
+                ),
+                
+                box(
+                  status = "primary",
+                  plotlyOutput("patinsurance"),
+                  width = 6,
+                ),
+                
+                
+                box(
+                  status = "primary",
+                  plotlyOutput("patadmloc"),
+                  width = 6,
+                ),
+                
+                box(
+                  status = "primary",
+                  plotlyOutput("patdisloc"),
+                  width = 6,
+                )
                 
                 
               ),
@@ -968,10 +1004,28 @@ body <- dashboardBody(
                 ),
                 
                 box(
+                  status = "primary",
                   plotlyOutput("icugrafico"),
-                  width = 9,
-                )
+                  width = 6,
+                ),
                 
+                box(
+                  status = "primary",
+                  plotlyOutput("icuidade"),
+                  width = 6,
+                ),
+                
+                box(
+                  status = "primary",
+                  plotlyOutput("icufunit"),
+                  width = 6,
+                ),
+                
+                box(
+                  status = "primary",
+                  plotlyOutput("iculunit"),
+                  width = 6,
+                ),
                 
                 
               ),
@@ -2513,7 +2567,103 @@ server <- (function(input, output,session) {
   
   
   
+  output$patgender <-  renderPlotly({
+    plot_ly(
+      count(fully_filtered(), ETHNICITY),values=~n,labels=~factor(ETHNICITY)
+      ,type="pie") %>%
+      layout(title= "Ethnicity distribuiton", showlegend = F
+             
+      )
+
+  })
+  
+  output$patage <-  renderPlotly({
+    plot_ly(
+      data = fully_filtered(),
+      x = ~age,
+      type = "histogram"
+    ) %>%
+      layout(title= "Histogram of Length of Stay", 
+             xaxis= list(title = "Years" ),
+             yaxis= list(title = "Frequency")
+      )
+    
+  })
+  
+  output$icuidade <-  renderPlotly({
+    plot_ly(
+      data = fully_filtered2(),
+      x = ~age,
+      type = "histogram"
+    ) %>%
+      layout(title= "Histogram of Age", 
+             xaxis= list(title = "Years" ),
+             yaxis= list(title = "Frequency")
+      )
+    
+  })
+  
+  
+  output$icufunit <-  renderPlotly({
+    plot_ly(
+      count(fully_filtered2(), FIRST_CAREUNIT),values=~n,labels=~factor(FIRST_CAREUNIT)
+      ,type="pie") %>%
+      layout(title= "First Care Unit"
+             
+      )
+    
+  })
+  
+  output$iculunit <-  renderPlotly({
+    plot_ly(
+      count(fully_filtered2(), LAST_CAREUNIT),values=~n,labels=~factor(LAST_CAREUNIT)
+      ,type="pie") %>%
+      layout(title= "Last Care Unit"
+             
+      )
+    
+  })
+  
+  output$patadmitype <-  renderPlotly({
+    plot_ly(
+      count(fully_filtered(), ADMISSION_TYPE),values=~n,labels=~factor(ADMISSION_TYPE)
+      ,type="pie") %>%
+      layout(title= "Admission type"
+             
+      )
+    
+  })
+  
+  output$patinsurance <-  renderPlotly({
+    plot_ly(
+      count(fully_filtered(), INSURANCE),values=~n,labels=~factor(INSURANCE)
+      ,type="pie") %>%
+      layout(title= "Insurance type"
+             
+      )
+    
+  })
+  
+  output$patadmloc <-  renderPlotly({
+    plot_ly(
+      count(fully_filtered(), ADMISSION_LOCATION),values=~n,labels=~factor(ADMISSION_LOCATION)
+      ,type="pie") %>%
+      layout(title= "Admission Location"
+             
+      )
+    
+  })
  
+  output$patdisloc <-  renderPlotly({
+    plot_ly(
+      count(fully_filtered(), DISCHARGE_LOCATION),values=~n,labels=~factor(DISCHARGE_LOCATION)
+      ,type="pie") %>%
+      layout(title= "Admission Location"
+             
+      )
+    
+  })
+  
   
   
   
