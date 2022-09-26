@@ -396,14 +396,49 @@ ICUcomplete <- left_join(ICUSTAYS, df[,c("age","SUBJECT_ID", "GENDER","ETHNICITY
                   by = "SUBJECT_ID")
 
 ICUcomplete <- subset(ICUcomplete, select= -c(1))
-  
+
+ICUcomplete$GENDER <- as.factor(ICUcomplete$GENDER)
+ICUcomplete$ETHNICITY   <- as.factor(ICUcomplete$ETHNICITY)
+ICUcomplete$FIRST_CAREUNIT   <- as.factor(ICUcomplete$FIRST_CAREUNIT)
+ICUcomplete$LAST_CAREUNIT   <- as.factor(ICUcomplete$LAST_CAREUNIT)
+ICUcomplete$DBSOURCE   <- as.factor(ICUcomplete$DBSOURCE)
+ICUcomplete$INTIME   <- as.Date(ICUcomplete$INTIME)
+ICUcomplete$OUTTIME   <- as.Date(ICUcomplete$OUTTIME)
+
+
+
 most_freq_icd <- count(DIAGNOSES_ICD, ICD9_CODE)
 most_freq_icd <- most_freq_icd[order(-most_freq_icd$n),]
 most_freq_icd <- head(most_freq_icd,10)
 most_freq_icd <- left_join(most_freq_icd, D_ICD_DIAGNOSES, by = "ICD9_CODE")
 
 days_before_death <- filter(df, EXPIRE_FLAG == "1"  & (HOSPITAL_EXPIRE_FLAG == "0" & DOD_HOSP == "")) #para casos onde hospital expire flag esta mal
+days_before_death <-subset(days_before_death, select = -c(2,20))
 days_before_death$days<- difftime( days_before_death$DOD, days_before_death$DISCHTIME , units = c("days"))
+days_before_death$days <- as.numeric(days_before_death$days)
+
+days_before_death <- days_before_death %>% relocate(days, .before=HADM_ID)
+days_before_death$ADMISSION_TYPE <- as.factor(days_before_death$ADMISSION_TYPE)
+days_before_death$ADMISSION_LOCATION <- as.factor(days_before_death$ADMISSION_LOCATION)
+days_before_death$DISCHARGE_LOCATION <- as.factor(days_before_death$DISCHARGE_LOCATION)
+days_before_death$INSURANCE <- as.factor(days_before_death$INSURANCE)
+days_before_death$LANGUAGE<- as.factor(days_before_death$LANGUAGE)
+days_before_death$RELIGION <- as.factor(days_before_death$RELIGION)
+days_before_death$MARITAL_STATUS <- as.factor(days_before_death$MARITAL_STATUS)
+days_before_death$ETHNICITY <- as.factor(days_before_death$ETHNICITY)
+days_before_death$DIAGNOSIS <- as.factor(days_before_death$DIAGNOSIS)
+days_before_death$GENDER <- as.factor(days_before_death$GENDER)
+days_before_death$DOD<- as.Date(days_before_death$DOD)
+days_before_death$DOD_HOSP<- as.Date(days_before_death$DOD_HOSP)
+days_before_death$DOD_SSN<- as.Date(days_before_death$DOD_SSN)
+days_before_death$EDREGTIME<- as.Date(days_before_death$EDREGTIME)
+days_before_death$EDOUTTIME<- as.Date(days_before_death$EDOUTTIME)
+
+days_before_death <- left_join(days_before_death, firstseq_num[,c("ICD9_CODE","SHORT_TITLE","LONG_TITLE","HADM_ID")], by = "HADM_ID")
+
+
+
+
 
 header <- dashboardHeader(title="MIMIC-III"
 )
@@ -452,7 +487,9 @@ sidebar <- dashboardSidebar(
     menuItem("ICU", tabName = "icu", icon = icon("bed"),
              startExpanded = FALSE,
              menuSubItem(" General ICU stays Info",
-                         tabName = "icu1")
+                         tabName = "icu1"),
+             menuSubItem(" Patient Mortality",
+                         tabName = "icu2")
 
 
     )
@@ -1019,6 +1056,9 @@ The tool is divided on 4 side main menus, each one giving you different function
                 
               ),
               mainPanel(
+                
+                verbatimTextOutput("summary3"),
+                
                 width = 9,
                 box(
                   status = "primary",
@@ -1058,6 +1098,70 @@ The tool is divided on 4 side main menus, each one giving you different function
               
             ), 
             
+    ),
+    
+    
+    
+    tabItem(tabName = "icu2",
+            h5("Patient mortality after Discharge:"),
+            fluidRow(
+              box(
+                title = "Patient mortality X days after Discharge", width = 6, solidHeader = TRUE,
+                status="success",
+                HTML("On this submenu we can get information of patients that died after discharge. That information is given by the attribute days.
+                     The ICD9_Code associated to each perished patient correspondes to the first ICD diagnosed on that admission (SEQ_NUM=1).")
+                
+               
+                
+              ), #fim box
+              
+             box(
+               width = 6,
+               sliderInput( inputId = "in_days",
+                              label = "Days", min = -1, max = 365,
+                              value = c(-1,-1)
+              ),
+             
+             actionButton('select3', 'Select'),
+             ),
+              
+              box(
+                status = "primary",
+                DT::dataTableOutput("death_days"),
+                #tableOutput("patient_id"),
+                width = 12,
+                downloadButton('download3',"Download this data"),
+              ),
+              
+              box(
+                status = "primary",
+                verbatimTextOutput("summary4"),
+                width = 12
+                
+              ),
+              
+              
+              box(
+                status = "primary",
+                plotlyOutput("death_eth"),
+                width = 6,
+              ),
+              
+              box(
+                status = "primary",
+                plotlyOutput("death_age"),
+                width = 6,
+              ),
+              
+              box(
+                status = "primary",
+                plotlyOutput("death_icd"),
+                width = 12,
+              )
+              
+              
+              
+            )
     )
     
   
@@ -1387,6 +1491,11 @@ server <- (function(input, output,session) {
   })
   
   
+  
+  output$summary3 <- renderPrint({
+    
+    summary(fully_filtered2())
+  })
   
   
   
@@ -2715,8 +2824,86 @@ server <- (function(input, output,session) {
       )
     
   })
+  # rdays_before_death <- reactive(days_before_death)
   
   
+  
+  
+  lost <- reactive({
+    if(input$in_days == "-1" ){
+      days_before_death
+    }
+    else{
+      days_before_death %>% 
+        filter( days >= input$in_days[1] & days <= input$in_days[2])
+    }
+  
+  })
+  
+  fully_filtered3 <- eventReactive(input$select3, {
+    lost()
+  })
+  
+  output$death_days <- DT::renderDataTable({
+    
+    
+    DT::datatable(  fully_filtered3(), options = list(scrollX = TRUE) )
+  })
+  
+  
+  output$download3 <- downloadHandler(
+    filename = function(){"deathsdischarge.csv"}, 
+    content = function(fname){
+      write.csv(fully_filtered3(), fname)
+    }
+  )
+  
+  output$summary4 <- renderPrint({
+    
+    summary(fully_filtered3())
+  })
+  
+  output$death_eth <-  renderPlotly({
+    
+    
+    plot_ly(
+      count(fully_filtered3(), ETHNICITY),values=~n,labels=~factor(ETHNICITY)
+      ,type="pie") %>%
+      layout(title= "Mortality  by Ethnicity"
+             
+      )
+    
+  })
+  
+  output$death_age <- renderPlotly({
+    plot_ly(
+      data = fully_filtered3(),
+      x = ~age,
+      type = "histogram"
+    ) %>%
+      layout(title= "Histogram of Mortality , including people over 89 years", 
+             xaxis= list(title = "Age Range" ),
+             yaxis= list(title = "Frequency")
+      )
+    
+    
+  })
+  
+  output$death_icd <- renderPlotly({
+    plot_ly(
+      data = fully_filtered3(),
+      x = ~ICD9_CODE,
+      type = "histogram"
+      # hoverinfo = "text",
+      # hovertext = paste("IC9-Code:", fully_filtered3$SHORT_TITLE)
+    ) %>%
+      layout(title= "Histogram of ICD Mortality ", 
+             xaxis= list(title = "ICD9" ),
+             yaxis= list(title = "Frequency")
+      )
+    
+    
+  })
   
   
 })
