@@ -75,6 +75,8 @@ df$EXPIRE_FLAG <- as.factor(df$EXPIRE_FLAG)
 #df <- df %>% distinct(SUBJECT_ID, .keep_all =  TRUE)
 df$age <- age_calc(df$DOB, df$ADMITTIME, units = "years",precise = FALSE)
 
+# df <- subset(df, select = -c(ROW_ID.x, ROW_ID.y))
+
 #gender <- data.frame(unclass(table(dfmerge$GENDER)))
 #n_males <-gender[2,] / sum(gender) 
 
@@ -409,10 +411,10 @@ ICUcomplete$OUTTIME   <- as.Date(ICUcomplete$OUTTIME)
 
 most_freq_icd <- count(DIAGNOSES_ICD, ICD9_CODE)
 most_freq_icd <- most_freq_icd[order(-most_freq_icd$n),]
-most_freq_icd <- head(most_freq_icd,10)
+most_freq_icd <- head(most_freq_icd,20)
 most_freq_icd <- left_join(most_freq_icd, D_ICD_DIAGNOSES, by = "ICD9_CODE")
 
-days_before_death <- filter(df, EXPIRE_FLAG == "1"  & (HOSPITAL_EXPIRE_FLAG == "0" & DOD_HOSP == "")) #para casos onde hospital expire flag esta mal
+days_before_death <- filter(df, EXPIRE_FLAG == "1"  & HOSPITAL_EXPIRE_FLAG == "0") #para casos onde hospital expire flag esta mal. NOP ANULADO
 days_before_death <-subset(days_before_death, select = -c(2,20))
 days_before_death$days<- difftime( days_before_death$DOD, days_before_death$DISCHTIME , units = c("days"))
 days_before_death$days <- as.numeric(days_before_death$days)
@@ -433,6 +435,8 @@ days_before_death$DOD_HOSP<- as.Date(days_before_death$DOD_HOSP)
 days_before_death$DOD_SSN<- as.Date(days_before_death$DOD_SSN)
 days_before_death$EDREGTIME<- as.Date(days_before_death$EDREGTIME)
 days_before_death$EDOUTTIME<- as.Date(days_before_death$EDOUTTIME)
+# days_before_death$SHORT_TITLE<- as.Date(days_before_death$SHORT_TITLE)
+# days_before_death$LONG_TITLE<- as.Date(days_before_death$LONG_TITLE)
 
 days_before_death <- left_join(days_before_death, firstseq_num[,c("ICD9_CODE","SHORT_TITLE","LONG_TITLE","HADM_ID")], by = "HADM_ID")
 
@@ -474,11 +478,11 @@ sidebar <- dashboardSidebar(
              startExpanded = FALSE,
              menuSubItem("General diagnoses info",
                          tabName = "diagnoses1"),
-             menuSubItem("Especific ICD9 Code",
+             menuSubItem("Specific ICD9 Group details",
                          tabName = "diagnoses2"),
-             menuSubItem("Search by ICD",
+             menuSubItem("Diagnoses search by ICD",
                          tabName = "diagnoses5"),
-             menuSubItem("First diagnoses",
+             menuSubItem("First diagnoses - comparison",
                          tabName = "diagnoses3"),
              menuSubItem("Diagnoses search by patient ID",
                          tabName = "diagnoses4")
@@ -1121,6 +1125,7 @@ The tool is divided on 4 side main menus, each one giving you different function
                               label = "Days", min = -1, max = 365,
                               value = c(-1,-1)
               ),
+              print("Select -1 to not filter by days"),
              
              actionButton('select3', 'Select'),
              ),
@@ -2716,7 +2721,7 @@ server <- (function(input, output,session) {
       x = ~age,
       type = "histogram"
     ) %>%
-      layout(title= "Histogram of Length of Stay", 
+      layout(title= "Histogram of Age", 
              xaxis= list(title = "Years" ),
              yaxis= list(title = "Frequency")
       )
@@ -2791,7 +2796,7 @@ server <- (function(input, output,session) {
     plot_ly(
       count(fully_filtered(), DISCHARGE_LOCATION),values=~n,labels=~factor(DISCHARGE_LOCATION)
       ,type="pie") %>%
-      layout(title= "Admission Location"
+      layout(title= "Discharge Location"
              
       )
     
